@@ -88,6 +88,7 @@ namespace ProjetInfo
             {
                 imgdonnees[i] = partieImage[a, b];
                 b++;
+
                 if (b == largeur)
                 {
                     b = 0;
