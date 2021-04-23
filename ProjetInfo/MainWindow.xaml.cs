@@ -310,19 +310,22 @@ namespace ProjetInfo
 
 
             byte[,] imageTab = imageOriginal.partieImage;
+            
             for (int i = 0; i < imageTab.GetLength(0); i++)
             {
-                for (int j = 0; j < Convert.ToInt32(imageTab.GetLength(1) / 2); j++)
+                for (int j = 0; j < Convert.ToInt32(imageTab.GetLength(1)); j++)
                 {
-                    imageTab[i, j] = 0;
+                    imageTab[i, j] = 255;
                 }
             }
 
             imageOriginal.partieImage = imageTab;
+            title.Text = Convert.ToString(imageOriginal.partieImage[0,0]);
+            
             imageOriginal.Image_to_File();
+            title.Text = Convert.ToString(imageOriginal.hauteur);
 
-
-
+            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
         }
     }
     }

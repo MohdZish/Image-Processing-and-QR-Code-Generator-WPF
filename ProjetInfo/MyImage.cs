@@ -53,9 +53,9 @@ namespace ProjetInfo
 
 
             partieImage = new byte[hauteur,largeur];
-            int a = 0;
+            /*int a = 0;
             int b = 0;
-            for (int i = 54; i < myfile.Length-54; i = i + largeur)
+            for (int i = 54; i < myfile.Length-54; i = i++)
             {
                 partieImage[a, b] = imgdonnees[i];
                 b++;
@@ -63,6 +63,18 @@ namespace ProjetInfo
                 {
                     b = 0;
                     a++;
+                }
+            }
+            */
+
+            int compte = 54;
+            for (int i = 0; i < partieImage.GetLength(0); i++)
+            {
+                for (int j = 0; j < partieImage.GetLength(1); j++)
+                {
+                    partieImage[i, j] = Convert.ToByte(imgdonnees[compte]);
+
+                    compte++;
                 }
             }
 
@@ -82,22 +94,18 @@ namespace ProjetInfo
 
         public void Image_to_File()
         {
-            int a = 0;
-            int b = 0;
-            for (int i = 54; i < imgdonnees.Length-54; i++)
+            
+            int compte = 54;
+            for (int i = 0; i < partieImage.GetLength(0); i++)
             {
-                imgdonnees[i] = partieImage[a, b];
-                b++;
-
-                if (b == largeur)
+                for (int j = 0; j < partieImage.GetLength(1); j++)
                 {
-                    b = 0;
-                    a++;
-                }
-                
-                
-            }
+                    imgdonnees[compte] = Convert.ToByte(partieImage[i, j]);
 
+                    compte++;
+                }
+            }
+            hauteur = imgdonnees[100];
             File.WriteAllBytes("./Resource/tempimg.bmp", imgdonnees);
         }
 
