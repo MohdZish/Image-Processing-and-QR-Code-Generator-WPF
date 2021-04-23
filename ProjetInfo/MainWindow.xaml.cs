@@ -309,21 +309,21 @@ namespace ProjetInfo
             MyImage imageOriginal= new MyImage(cheminOriginal);
 
 
-            byte[,] imageTab = imageOriginal.partieImage;
-            
-            for (int i = 0; i < imageTab.GetLength(0); i++)
+            byte[,]  imageTab2 = imageOriginal.partieImage;
+            //Traitement d'Image
+            for (int i = 0; i < imageOriginal.partieImage.GetLength(0); i++)
             {
-                for (int j = 0; j < Convert.ToInt32(imageTab.GetLength(1)); j++)
+                for (int j = 0; j < 50; j++)
                 {
-                    imageTab[i, j] = 255;
+                    imageOriginal.partieImage[i, j] = 20;
                 }
             }
 
-            imageOriginal.partieImage = imageTab;
+            //imageOriginal.partieImage = imageTab2;
             title.Text = Convert.ToString(imageOriginal.partieImage[0,0]);
-            
+
             imageOriginal.Image_to_File();
-            title.Text = Convert.ToString(imageOriginal.hauteur);
+
 
             imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
         }

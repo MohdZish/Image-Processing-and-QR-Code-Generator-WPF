@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjetInfo
 {
@@ -19,14 +14,14 @@ namespace ProjetInfo
         public MyImage(string myfile)
         {
             imgdonnees = File.ReadAllBytes(myfile); //byte[] avec tous les donnees du bmp (metadonnee + image)
-          
+
 
             byte[] taille_image = new byte[4];
             int compt = 0;
             for (int i = 14; i < 18; i++)
             {
                 taille_image[compt] = imgdonnees[i];
-                taille+= imgdonnees[i] + " ";
+                taille += imgdonnees[i] + " ";
                 compt++;
             }
             taille += Convertir_Endian_To_Int(taille_image);
@@ -52,7 +47,7 @@ namespace ProjetInfo
             hauteur = Convertir_Endian_To_Int(hauteur_image);
 
 
-            partieImage = new byte[hauteur,largeur];
+            partieImage = new byte[hauteur, largeur];
             /*int a = 0;
             int b = 0;
             for (int i = 54; i < myfile.Length-54; i = i++)
@@ -94,18 +89,18 @@ namespace ProjetInfo
 
         public void Image_to_File()
         {
-            
-            int compte = 54;
-            for (int i = 0; i < partieImage.GetLength(0); i++)
+            int a = 0;
+            int b = 0;
+            for (int i = 54; i < imgdonnees.Length; i = i + (largeur*3))
             {
-                for (int j = 0; j < partieImage.GetLength(1); j++)
+                for (int j = i; j < i + (largeur*3); j++)
                 {
-                    imgdonnees[compte] = Convert.ToByte(partieImage[i, j]);
-
-                    compte++;
+                    imgdonnees[j] = partieImage[a, b];
+                    b++;
                 }
+                b = 0;
             }
-            hauteur = imgdonnees[100];
+
             File.WriteAllBytes("./Resource/tempimg.bmp", imgdonnees);
         }
 
