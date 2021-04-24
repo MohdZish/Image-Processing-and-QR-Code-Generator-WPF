@@ -47,7 +47,7 @@ namespace ProjetInfo
             hauteur = Convertir_Endian_To_Int(hauteur_image);
 
 
-            partieImage = new byte[hauteur, largeur];
+            partieImage = new byte[hauteur, largeur*3];
             /*int a = 0;
             int b = 0;
             for (int i = 54; i < myfile.Length-54; i = i++)
@@ -87,9 +87,9 @@ namespace ProjetInfo
             return a;
         }
 
-        public void Image_to_File()
+        public string Image_to_File()
         {
-            int a = 0;
+            /*int a = 0;
             int b = 0;
             for (int i = 54; i < imgdonnees.Length; i = i + (largeur*3))
             {
@@ -99,9 +99,23 @@ namespace ProjetInfo
                     b++;
                 }
                 b = 0;
+            }*/
+
+            int a = 50;
+            for(int i = 0; i < partieImage.GetLength(0); i++)
+            {
+                for(int j = 0; j < partieImage.GetLength(1); j++)
+                {
+                    imgdonnees[a] = partieImage[i, j];
+                    a++;
+                }
             }
 
+
+
             File.WriteAllBytes("./Resource/tempimg.bmp", imgdonnees);
+
+            return Convert.ToString(imgdonnees[100]);
         }
 
     }

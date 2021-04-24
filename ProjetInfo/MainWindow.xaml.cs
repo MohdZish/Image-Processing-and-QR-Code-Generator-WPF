@@ -310,20 +310,66 @@ namespace ProjetInfo
 
 
             byte[,]  imageTab2 = imageOriginal.partieImage;
+
             //Traitement d'Image
             for (int i = 0; i < imageOriginal.partieImage.GetLength(0); i++)
             {
-                for (int j = 0; j < 50; j++)
+                for (int j = 0; j < imageOriginal.partieImage.GetLength(1); j++)
                 {
-                    imageOriginal.partieImage[i, j] = 20;
+                    imageOriginal.partieImage[i, j] = 111;
                 }
             }
 
             //imageOriginal.partieImage = imageTab2;
-            title.Text = Convert.ToString(imageOriginal.partieImage[0,0]);
+            //title.Text = Convert.ToString(imageOriginal.partieImage.GetLength(1));
+            //string b = imageOriginal.Image_to_File();
 
-            imageOriginal.Image_to_File();
+            byte[] myfile = File.ReadAllBytes(cheminOriginal);
 
+            byte[,] partieImage= new byte[imageOriginal.hauteur, imageOriginal.largeur*3];
+
+            int compte = 54;
+            for (int i = 0; i < partieImage.GetLength(0); i++)
+            {
+                for (int j = 0; j < partieImage.GetLength(1); j++)
+                {
+                    partieImage[i, j] = 255;
+                    compte++;
+                }
+            }
+
+            byte[] tempTab = new byte[partieImage.GetLength(0) * partieImage.GetLength(1)];
+
+            int a = 0;
+            int b = 0;
+            for (int i = 0; i < tempTab.Length; i++)
+            {
+                if(a < partieImage.GetLength(0))
+                {
+                    tempTab[i] = partieImage[a, b];
+                }
+                b++;
+                if (b >= partieImage.GetLength(1))
+                {
+                    b = 0;
+                    a++;
+                }
+            }
+
+
+
+            int compt = 0;
+            for (int i = 54; i < myfile.Length - 54; i++)
+            {
+                myfile[i] = tempTab[compt];
+                compt++;
+            }
+
+
+
+            title.Text = Convert.ToString(myfile.Length);
+
+            File.WriteAllBytes("./Resource/tempimg.bmp", myfile);
 
             imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
         }
