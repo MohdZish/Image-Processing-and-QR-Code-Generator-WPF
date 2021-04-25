@@ -76,12 +76,10 @@ namespace ProjetInfo
                 string originallocation = Convert.ToString(imgOriginel.Source);
                 string result = originallocation.Substring(originallocation.LastIndexOf('/') + 1);
                 imgnomtxt.Text = "Nom Image : " + result;
-
+                
                 System.IO.File.Copy(filename, "./Resource/originalimg.bmp", true);
 
-
                 cheminOriginal = "./Resource/originalimg.bmp";
-
             }
 
 
@@ -91,7 +89,7 @@ namespace ProjetInfo
         }
 
 
-        private void FractalePlace(object sender, RoutedEventArgs e)
+        private void Fractal_Click(object sender, RoutedEventArgs e)
         {
             imgTraite.Source = null;
             int imageHauteur = 340;
@@ -105,7 +103,7 @@ namespace ProjetInfo
                     double b = (double)(j - (imageHauteur / 2)) / (double)(imageHauteur / 4);
 
                     Complexe c = new Complexe(a, b);
-                    Complexe z = new Complexe(0, 0);
+                    Complexe z = new Complexe(0, 0); //on peut modifier ces parametres !!!!
 
                     int iterations = 0;
                     do
@@ -151,31 +149,160 @@ namespace ProjetInfo
             }
         }
 
-        public static void LaPlacienDet(string myfile) //myfile est l'emplacement de l'image
+        private void NoirBlanc_Click(object sender, RoutedEventArgs e)
+        {
+            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
+
+            MyImage imageOriginal = new MyImage(cheminOriginal);
+
+            byte[,] monImage = imageOriginal.partieImage;
+
+
+            for (int i = 0; i < monImage.GetLength(0); i++)
+            {
+                for (int j = 0; j < monImage.GetLength(1); j=j+3)
+                {
+                    // PLAY WITH THE 5 here, INCREASE IT TO SEE DIFFERENT EFFECTS
+                    byte somme = Convert.ToByte((monImage[i, j] + monImage[i, j + 1]  + monImage[i, j + 2])/3);
+                    monImage[i, j] = somme;
+                    monImage[i, j+1] = somme;
+                    monImage[i, j+2] = somme;
+                }
+            }
+
+            imageOriginal.partieImage = monImage;
+            imageOriginal.Image_to_File();
+
+            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
+        }
+
+        private void EffectsPlay(object sender, RoutedEventArgs e)
+        {
+            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
+
+            MyImage imageOriginal = new MyImage(cheminOriginal);
+
+            byte[,] monImage = imageOriginal.partieImage;
+
+            for (int i = 0; i < monImage.GetLength(0); i++)
+            {
+                for (int j = 0; j < monImage.GetLength(1); j = j + 3)
+                {
+                    // PLAY WITH THE 5 here, INCREASE IT TO SEE DIFFERENT EFFECTS
+                    byte somme = Convert.ToByte((monImage[i, j] / 5) + (monImage[i, j + 1] / 5) + (monImage[i, j + 2] / 5));
+                    monImage[i, j] = somme;
+                }
+            }
+
+            imageOriginal.partieImage = monImage;
+            imageOriginal.Image_to_File();
+
+            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
+        }
+
+        private void FlipRotation(object sender, RoutedEventArgs e)
+        {
+            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
+            Bitmap imagebmp = BitmapImage2Bitmap(originel);
+
+            imagebmp.RotateFlip(RotateFlipType.Rotate180FlipX);
+
+            imagebmp.Save("./Resource/tempimg.bmp");
+
+            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
+        }
+
+        private void mirroirBtn_Click(object sender, RoutedEventArgs e)
+        {
+            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originale
+
+            MyImage imageOriginal= new MyImage(cheminOriginal);
+
+            byte[,] monImage = imageOriginal.partieImage; //interesting : monImage ====== partieImage !!!
+
+            //Traitement d'Image
+            int compt = 0;
+            for (int i = 0; i < monImage.GetLength(0); i++)
+            {
+                for (int j = Convert.ToInt32(monImage.GetLength(1) / 2); j < monImage.GetLength(1); j= j + 3)
+                {
+                    monImage[i, j] = monImage[i, Convert.ToInt32(monImage.GetLength(1) / 2) - compt - 3];
+                    monImage[i, j+1] = monImage[i, Convert.ToInt32(monImage.GetLength(1) / 2) - compt - 2];
+                    monImage[i, j + 2] = monImage[i, Convert.ToInt32(monImage.GetLength(1) / 2) - compt -  1];
+
+                    compt=compt+3;
+                }
+                compt = 0;
+            }
+
+            //imageOriginal.partieImage = monImage; 
+
+            imageOriginal.Image_to_File();
+
+            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
+        }
+
+        private void luminositeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            double intensite = 1.5;
+
+            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
+
+            MyImage imageOriginal = new MyImage(cheminOriginal);
+
+            byte[,] monImage = imageOriginal.partieImage;
+
+
+            for (int i = 0; i < monImage.GetLength(0); i++)
+            {
+                for (int j = 0; j < monImage.GetLength(1); j++)
+                {
+                    double a = monImage[i, j] * intensite;
+                    if(a > 255)
+                    {
+                        a = 255;
+                    }
+                    if (a < 0)
+                    {
+                        a = 0;
+                    }
+
+                    monImage[i, j] = Convert.ToByte(a);
+                }
+            }
+
+            imageOriginal.partieImage = monImage;
+            imageOriginal.Image_to_File();
+
+            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
+        }
+
+        private void contourBtn_Click(object sender, RoutedEventArgs e)
         {
             int limite = 100; // IMPORTANT : c'est la seuil de detection de contours, varient selon images.
 
-            Bitmap originel = new Bitmap(myfile); ;
+            MyImage imageOriginal = new MyImage(cheminOriginal);
 
-            byte[] imagebyte = File.ReadAllBytes(myfile);
+            byte[,] monImage = imageOriginal.partieImage;
 
-            int hauteur = originel.Height;
-            int longeur = originel.Width;
+            int hauteur = imageOriginal.hauteur;
+            int longeur = imageOriginal.largeur;
 
             int[,] couleurmoyenne = new int[hauteur, longeur];
             //Console.WriteLine("Main mat: " + couleurmoyenne.GetLength(0) + "x" + couleurmoyenne.GetLength(1));
 
 
             //On crée une matrice couleurmoyenne qui que les pixels de l'image (sans header ou metadonnées)
-            int compteur = 54;
+            int compteur = 0;
             for (int i = 0; i < couleurmoyenne.GetLength(0); i++)
             {
                 for (int j = 0; j < couleurmoyenne.GetLength(1); j++)
                 {
-                    couleurmoyenne[i, j] = (imagebyte[compteur] + imagebyte[compteur + 1] + imagebyte[compteur + 2]) / 3;
+                    couleurmoyenne[i, j] = (monImage[i, compteur] + monImage[i, compteur + 1] + monImage[i, compteur + 2]) / 3;
                     compteur = compteur + 3;
                     //Console.Write(couleurmoyenne[i, j] + " ");
                 }
+                compteur = 0;
                 //Console.WriteLine();
             }
 
@@ -190,7 +317,6 @@ namespace ProjetInfo
             int[,] nouveauimg = new int[couleurmoyenne.GetLength(0) - 2, couleurmoyenne.GetLength(1) - 2];
 
 
-
             // On fait ici la Convolution de Matrice Pixel de l'image avec la Matrice de convolution crée avant.
             for (int i = 1; i < nouveauimg.GetLength(0); i++)
             {
@@ -202,14 +328,14 @@ namespace ProjetInfo
                     int b = lapmat[0, 1] * couleurmoyenne[i - 1, j];
                     int c = lapmat[0, 2] * couleurmoyenne[i - 1, j + 1];
                     int d = lapmat[1, 0] * couleurmoyenne[i, j - 1];
-                    int e = lapmat[1, 1] * couleurmoyenne[i, j];
+                    int m = lapmat[1, 1] * couleurmoyenne[i, j];
                     int f = lapmat[1, 2] * couleurmoyenne[i, j + 1];
                     int g = lapmat[2, 0] * couleurmoyenne[i + 1, j - 1];
                     int h = lapmat[2, 1] * couleurmoyenne[i + 1, j];
                     int k = lapmat[2, 2] * couleurmoyenne[i + 1, j + 1];
 
 
-                    somme += a + b + c + d + e + f + g + h + k;
+                    somme += a + b + c + d + m + f + g + h + k;
 
                     nouveauimg[i - 1, j - 1] = somme;
                 }
@@ -249,7 +375,7 @@ namespace ProjetInfo
             }
 
             //Enfin on transfere les matrices pixels pour version final de l'image
-            int[,] matbyte = new int[hauteur, longeur * 3];
+            byte[,] matbyte = new byte[hauteur, longeur * 3];
             int lig = 0;
             int col = 0;
 
@@ -258,9 +384,9 @@ namespace ProjetInfo
                 for (int j = 0; j < matbyte.GetLength(1); j = j + 3)
                 {
                     int test = col;
-                    matbyte[i, j] = pixelsfinal[lig, col];
-                    matbyte[i, j + 1] = pixelsfinal[lig, col];
-                    matbyte[i, j + 2] = pixelsfinal[lig, col];
+                    matbyte[i, j] = Convert.ToByte(pixelsfinal[lig, col]);
+                    matbyte[i, j + 1] = Convert.ToByte(pixelsfinal[lig, col]);
+                    matbyte[i, j + 2] = Convert.ToByte(pixelsfinal[lig, col]);
 
                     col++;
 
@@ -269,107 +395,59 @@ namespace ProjetInfo
                 lig++;
             }
 
-            int compte = 54;
-            for (int i = 0; i < matbyte.GetLength(0); i++)
-            {
-                for (int j = 0; j < matbyte.GetLength(1); j++)
-                {
-                    imagebyte[compte] = Convert.ToByte(matbyte[i, j]);
+            imageOriginal.partieImage = matbyte;
 
-                    compte++;
-                }
-            }
-
-            File.WriteAllBytes("Sortie.bmp", imagebyte);
-        }
-
-
-        private void NoirBlanc_Click(object sender, RoutedEventArgs e)
-        {
-            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
-            Bitmap imagebmp = BitmapImage2Bitmap(originel);
-
-            imagebmp.RotateFlip(RotateFlipType.Rotate180FlipX);
-
-            imagebmp.Save("./Resource/tempimg.bmp");
+            imageOriginal.Image_to_File();
 
             imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
         }
 
-        private void contourBtn_Click(object sender, RoutedEventArgs e)
+        private void flouBtn_Click(object sender, RoutedEventArgs e)
         {
-            
-        }
+            int limite = 100; // IMPORTANT : c'est la seuil de detection de contours, varient selon images.
 
-        private void mirroirBtn_Click(object sender, RoutedEventArgs e)
-        {
-            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originale
-            //Bitmap imagebmp = BitmapImage2Bitmap(originel);
+            MyImage imageOriginal = new MyImage(cheminOriginal);
 
-            MyImage imageOriginal= new MyImage(cheminOriginal);
+            byte[,] monImage = imageOriginal.partieImage;
+
+            int hauteur = imageOriginal.hauteur;
+            int longeur = imageOriginal.largeur;
 
 
-            byte[,]  imageTab2 = imageOriginal.partieImage;
+            //Pour ce detection, nous avons utilisé l'algorithme de LAPLACIEN
+            double[,] matriceFlou = new double[3, 3] { { 1/9, 1/9, 1/9 }, { 1/9, 1/9, 1/9 }, { 1/9, 1/9, 1/9} };
 
-            //Traitement d'Image
-            for (int i = 0; i < imageOriginal.partieImage.GetLength(0); i++)
+            byte[,] nouveauimg = monImage;
+            byte[,] img = monImage;
+
+            // On fait ici la Convolution de Matrice Pixel de l'image avec la Matrice de convolution crée avant.
+            for (int i = 3; i < nouveauimg.GetLength(0)-3; i++)
             {
-                for (int j = 0; j < imageOriginal.partieImage.GetLength(1); j++)
+                for (int j = 3; j < nouveauimg.GetLength(1)-3; j++)
                 {
-                    imageOriginal.partieImage[i, j] = 111;
-                }
-            }
+                    int somme = 0;
 
-            //imageOriginal.partieImage = imageTab2;
-            //title.Text = Convert.ToString(imageOriginal.partieImage.GetLength(1));
-            //string b = imageOriginal.Image_to_File();
+                    double a = matriceFlou[0, 0] * monImage[i - 1, j - 3];
+                    double b = matriceFlou[0, 1] * monImage[i - 1, j];
+                    double c = matriceFlou[0, 2] * monImage[i - 1, j + 3];
+                    double d = matriceFlou[1, 0] * monImage[i, j - 3];
+                    double m = matriceFlou[1, 1] * monImage[i, j];
+                    double f = matriceFlou[1, 2] * monImage[i, j + 3];
+                    double g = matriceFlou[2, 0] * monImage[i + 1, j - 3];
+                    double h = matriceFlou[2, 1] * monImage[i + 1, j];
+                    double k = matriceFlou[2, 2] * monImage[i + 1, j + 3];
 
-            byte[] myfile = File.ReadAllBytes(cheminOriginal);
+                    somme += (int)(a + b + c + d + m + f + g + h + k);
 
-            byte[,] partieImage= new byte[imageOriginal.hauteur, imageOriginal.largeur*3];
-
-            int compte = 54;
-            for (int i = 0; i < partieImage.GetLength(0); i++)
-            {
-                for (int j = 0; j < partieImage.GetLength(1); j++)
-                {
-                    partieImage[i, j] = 255;
-                    compte++;
-                }
-            }
-
-            byte[] tempTab = new byte[partieImage.GetLength(0) * partieImage.GetLength(1)];
-
-            int a = 0;
-            int b = 0;
-            for (int i = 0; i < tempTab.Length; i++)
-            {
-                if(a < partieImage.GetLength(0))
-                {
-                    tempTab[i] = partieImage[a, b];
-                }
-                b++;
-                if (b >= partieImage.GetLength(1))
-                {
-                    b = 0;
-                    a++;
+                    img[i, j] = Convert.ToByte(somme);
                 }
             }
 
 
-
-            int compt = 0;
-            for (int i = 54; i < myfile.Length - 54; i++)
-            {
-                myfile[i] = tempTab[compt];
-                compt++;
-            }
+            imageOriginal.partieImage = img;
 
 
-
-            title.Text = Convert.ToString(myfile.Length);
-
-            File.WriteAllBytes("./Resource/tempimg.bmp", myfile);
+            imageOriginal.Image_to_File();
 
             imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
         }

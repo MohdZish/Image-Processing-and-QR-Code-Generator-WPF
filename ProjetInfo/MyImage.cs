@@ -8,8 +8,8 @@ namespace ProjetInfo
         public int hauteur;
         public int largeur;
         public string taille;
-        public byte[] imgdonnees;
-        public byte[,] partieImage;
+        public byte[] imgdonnees; 
+        public byte[,] partieImage;  //matrice de bytes
 
         public MyImage(string myfile)
         {
@@ -47,7 +47,7 @@ namespace ProjetInfo
             hauteur = Convertir_Endian_To_Int(hauteur_image);
 
 
-            partieImage = new byte[hauteur, largeur*3];
+
             /*int a = 0;
             int b = 0;
             for (int i = 54; i < myfile.Length-54; i = i++)
@@ -61,7 +61,7 @@ namespace ProjetInfo
                 }
             }
             */
-
+            partieImage = new byte[hauteur, largeur * 3];
             int compte = 54;
             for (int i = 0; i < partieImage.GetLength(0); i++)
             {
@@ -87,21 +87,9 @@ namespace ProjetInfo
             return a;
         }
 
-        public string Image_to_File()
+        public void Image_to_File()
         {
-            /*int a = 0;
-            int b = 0;
-            for (int i = 54; i < imgdonnees.Length; i = i + (largeur*3))
-            {
-                for (int j = i; j < i + (largeur*3); j++)
-                {
-                    imgdonnees[j] = partieImage[a, b];
-                    b++;
-                }
-                b = 0;
-            }*/
-
-            int a = 50;
+            int a = 54;
             for(int i = 0; i < partieImage.GetLength(0); i++)
             {
                 for(int j = 0; j < partieImage.GetLength(1); j++)
@@ -112,10 +100,7 @@ namespace ProjetInfo
             }
 
 
-
             File.WriteAllBytes("./Resource/tempimg.bmp", imgdonnees);
-
-            return Convert.ToString(imgdonnees[100]);
         }
 
     }

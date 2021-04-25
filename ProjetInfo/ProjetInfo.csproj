@@ -126,6 +126,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\lenna.bmp" />
+    <Resource Include="Images\Sortie.bmp" />
     <Content Include="Resource\tempimg.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
