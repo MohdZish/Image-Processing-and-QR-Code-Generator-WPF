@@ -72,9 +72,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="GenericGF.cs" />
+    <Compile Include="GenericGFPoly.cs" />
     <Compile Include="QRcode.xaml.cs">
       <DependentUpon>QRcode.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ReedSolomonAlgorithm.cs" />
+    <Compile Include="ReedSolomonDecoder.cs" />
+    <Compile Include="ReedSolomonEncoder.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

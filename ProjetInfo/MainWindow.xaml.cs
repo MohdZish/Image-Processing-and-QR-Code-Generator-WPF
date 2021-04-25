@@ -121,7 +121,7 @@ namespace ProjetInfo
 
                     } while (iterations < 100);
 
-                    imageFractale.SetPixel(i, j, iterations < 100 ? Color.Black : Color.White);
+                    imageFractale.SetPixel(i, j, iterations < 100 ? Color.White : Color.Black);
                 }
             }
 

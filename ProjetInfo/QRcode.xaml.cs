@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReedSolomon;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -141,6 +142,81 @@ namespace ProjetInfo
             }
             
             test.Text = resultatBytes[2] + " ";
+
+
+            // Maintenant on a tous les binaires de notre phrase dans resultatBytes
+
+
+            //Maintenant, commencons à traiter notre donnes binaire
+
+            // Nombre bits souhaité : 152 bits
+
+            //avec he ll o  wo rl d    on a : 11 + 11 + 11 + 11 + 11 + 6 = 61
+
+            //int longeurBinaire = 0;
+            List<char> bytesContinu = new List<char>(); //Contient 0110000101101111000110 ...
+
+            string bytesDonnees = "";
+
+            foreach (string bin in resultatBytes) //on prend 01000100
+            {
+                bytesDonnees += bin;
+            }
+
+            //ajouter 0 à la fin (4 maximum) si < 152
+            for(int i = 0; i < 4; i++)
+            {
+                if(bytesDonnees.Length < 152)
+                {
+                    bytesDonnees += "0";
+                }
+            }
+
+            //nombre de bits est un MULTIPLE DE 8 ?
+            //Sinon ajoute encore des 0
+
+            while (bytesDonnees.Length % 8 != 0)
+            {
+                bytesDonnees += "0";
+            }
+
+            // Toujours pas 152 ?
+            // Ajouter 11101100 00010001 (236 et 17) des specifications QRcode pour remplir vide
+
+            while (bytesDonnees.Length < 152) 
+            {
+                bytesDonnees += "1110110000010001"; 
+            }
+
+
+            // Maintenant REED SOLOMONS
+
+            // Le message final est de forme : bytedonnees + ERREUR CORREC de REEDS
+            // Donc faisons Reed Solomons
+
+            Encoding u8 = Encoding.UTF8;
+            string a = "HELLO WORLD";
+            byte[] bytesa = u8.GetBytes(a);
+            //byte[] result = ReedSolomonAlgorithm.Encode(bytesa, 7);
+            //Privilégiez l'écriture suivante car par défaut le type choisi est DataMatrix 
+            byte[] result = ReedSolomonAlgorithm.Encode(bytesa, 7, ErrorCorrectionCodeType.QRCode);
+
+
+
+            string message = bytesDonnees; // pas necessaire mais on creer un nouveau string pour bytesdonnes + corrections 
+            foreach (byte i in result)
+            {
+                message += DecimalToBytes(i, 8); //8 car on veut un octet pour chaque mot de corrections
+            }
+
+
+            //Test
+            string teststring = "";
+            foreach(char i in bytesContinu)
+            {
+                teststring += i + " ";
+            }
+            test.Text = message.Length + "";
 
 
 
