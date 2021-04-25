@@ -214,10 +214,11 @@ namespace ProjetInfo
 
         private void mirroirBtn_Click(object sender, RoutedEventArgs e)
         {
+           
             BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originale
 
             MyImage imageOriginal= new MyImage(cheminOriginal);
-
+            title.Text = imageOriginal.taille + " ";
             byte[,] monImage = imageOriginal.partieImage; //interesting : monImage ====== partieImage !!!
 
             //Traitement d'Image
@@ -333,7 +334,6 @@ namespace ProjetInfo
                     int g = lapmat[2, 0] * couleurmoyenne[i + 1, j - 1];
                     int h = lapmat[2, 1] * couleurmoyenne[i + 1, j];
                     int k = lapmat[2, 2] * couleurmoyenne[i + 1, j + 1];
-
 
                     somme += a + b + c + d + m + f + g + h + k;
 

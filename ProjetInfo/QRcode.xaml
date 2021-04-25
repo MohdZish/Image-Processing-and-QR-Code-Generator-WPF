@@ -14,9 +14,10 @@
 
     <Grid>
         <TextBox x:Name="qrText" FontSize="25" Height="297" Background="Transparent" Width="307" BorderThickness="1" BorderBrush="White" CaretBrush="White" Foreground="White" Margin="536,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"  />
-        <Button Content="Generer un QR Code" VerticalAlignment="Top"  Margin="536,363,57,0" BorderThickness="0"  Height="30" Background="#FF378BF3" Foreground="White" BorderBrush="#FF37F3AE">
+        <Button Content="Generer un QR Code" Click="CreerQR_Click" VerticalAlignment="Top"  Margin="536,363,57,0" BorderThickness="0"  Height="30" Background="#FF378BF3" Foreground="White" BorderBrush="#FF37F3AE">
         </Button>
         <Rectangle  HorizontalAlignment="Left"  Width="340" Height="340" Fill="#593A2E5B" Margin="74,35,0,45"/>
+        <TextBlock x:Name="test" Text="Resultat QR" TextAlignment="Center" Foreground="White" Margin="0,10,402,-10" />
 
     </Grid>
 </Page>

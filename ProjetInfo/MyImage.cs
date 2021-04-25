@@ -7,7 +7,7 @@ namespace ProjetInfo
     {
         public int hauteur;
         public int largeur;
-        public string taille;
+        public int taille;
         public byte[] imgdonnees; 
         public byte[,] partieImage;  //matrice de bytes
 
@@ -18,13 +18,13 @@ namespace ProjetInfo
 
             byte[] taille_image = new byte[4];
             int compt = 0;
-            for (int i = 14; i < 18; i++)
+            for (int i = 2; i < 6; i++)
             {
                 taille_image[compt] = imgdonnees[i];
-                taille += imgdonnees[i] + " ";
+                //taille = imgdonnees[i];
                 compt++;
             }
-            taille += Convertir_Endian_To_Int(taille_image);
+            taille = Convertir_Endian_To_Int(taille_image);
 
 
             byte[] largeur_image = new byte[4];
@@ -61,6 +61,7 @@ namespace ProjetInfo
                 }
             }
             */
+
             partieImage = new byte[hauteur, largeur * 3];
             int compte = 54;
             for (int i = 0; i < partieImage.GetLength(0); i++)
@@ -72,7 +73,6 @@ namespace ProjetInfo
                     compte++;
                 }
             }
-
         }
 
         public int Convertir_Endian_To_Int(byte[] tab)
