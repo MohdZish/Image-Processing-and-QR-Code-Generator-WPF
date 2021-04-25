@@ -451,5 +451,19 @@ namespace ProjetInfo
 
             imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
         }
+
+        private void qrcodeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if(qrframe.Content == null)
+            {
+                QRcode pageQR = new QRcode();
+                qrframe.Content = pageQR;
+            }
+            else
+            {
+                qrframe.Content = null;
+            }
+            
+        }
     }
     }

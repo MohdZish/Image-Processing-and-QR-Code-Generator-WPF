@@ -1,0 +1,22 @@
+﻿<Page x:Class="ProjetInfo.QRcode"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ProjetInfo"
+      mc:Ignorable="d" 
+      d:DesignHeight="420" d:DesignWidth="900"
+      Title="QRcode">
+
+    <Page.Background>
+        <SolidColorBrush x:Name="BackgroundBrush" Opacity="1" Color="#FF211544"/>
+    </Page.Background>
+
+    <Grid>
+        <TextBox x:Name="qrText" FontSize="25" Height="297" Background="Transparent" Width="307" BorderThickness="1" BorderBrush="White" CaretBrush="White" Foreground="White" Margin="536,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"  />
+        <Button Content="Generer un QR Code" VerticalAlignment="Top"  Margin="536,363,57,0" BorderThickness="0"  Height="30" Background="#FF378BF3" Foreground="White" BorderBrush="#FF37F3AE">
+        </Button>
+        <Rectangle  HorizontalAlignment="Left"  Width="340" Height="340" Fill="#593A2E5B" Margin="74,35,0,45"/>
+
+    </Grid>
+</Page>
