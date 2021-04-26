@@ -353,41 +353,75 @@ namespace ProjetInfo
             int x1 = 0;
             int y1 = 20;
             bool cotefait = false;
-            for(int i = 0; i < 20; i++)
+            bool descente = false;
+            string tester = "yes";
+            for(int i = 0; i < 40; i++)
             {
+                byte couleur = 255;
                 if(message[i] == '1')
                 {
-                    tab21[x1, y1] = 0;
-                    if(cotefait == false)
-                    {
-                        y1--;
-                        cotefait = true;
-                    }
-                    else
-                    {
-                        x1++;
-                        y1++;
-                        cotefait = false;
-                    }
-                    
+                    couleur = 0;
                 }
-                if (message[i] == '0')
+                tab21[x1, y1] = couleur;
+
+                // les testes pour choisir prochain bloc
+
+                if(descente == false)
                 {
-                    tab21[x1, y1] = 255;
                     if (cotefait == false)
                     {
                         y1--;
                         cotefait = true;
                     }
-                    else
+                    else  //aller en haut
                     {
-                        x1++;
-                        y1++;
-                        cotefait = false;
+                        if (tab21[x1 + 1, y1] == Convert.ToByte(60))
+                        {
+                            y1--;
+                            cotefait = false;
+                            descente = true;
+                        }
+                        else
+                        {
+                            x1++;
+                            y1++;
+                            cotefait = false;
+                        }
                     }
                 }
+
+                else
+                {
+                    tester = "yeahhhhh";
+                    if (cotefait == false)
+                    {
+                        y1--;
+                        cotefait = true;
+                    }
+                    else  //aller en haut
+                    {
+                        if (tab21[x1 - 1, y1] == Convert.ToByte(60))
+                        {
+                            y1--;
+                            cotefait = false;
+                            descente = false;
+                        }
+                        else
+                        {
+                            x1--;
+                            y1++;
+                            cotefait = false;
+                        }
+                    }
+                }
+
+
+
+                
             }
-            test.Text = message + "";
+            test.Text = tester + "";
+
+
 
 
 
