@@ -247,6 +247,7 @@ namespace ProjetInfo
         {
             double intensite = 1.5;
 
+
             BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
 
             MyImage imageOriginal = new MyImage(cheminOriginal);

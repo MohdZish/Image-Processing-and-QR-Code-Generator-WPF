@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Drawing;
+using System.IO;
 
 namespace ProjetInfo
 {
@@ -141,7 +143,7 @@ namespace ProjetInfo
                 resultatBytes.Add(valbytes);
             }
             
-            test.Text = resultatBytes[2] + " ";
+            //test.Text = resultatBytes[2] + " ";
 
 
             // Maintenant on a tous les binaires de notre phrase dans resultatBytes
@@ -192,34 +194,93 @@ namespace ProjetInfo
             // Maintenant REED SOLOMONS
 
             // Le message final est de forme : bytedonnees + ERREUR CORREC de REEDS
-            // Donc faisons Reed Solomons
-
+            // Donc faisons Reed Solomons pour trouver les bytes de corrections
             Encoding u8 = Encoding.UTF8;
-            string a = "HELLO WORLD";
-            byte[] bytesa = u8.GetBytes(a);
-            //byte[] result = ReedSolomonAlgorithm.Encode(bytesa, 7);
-            //Privilégiez l'écriture suivante car par défaut le type choisi est DataMatrix 
-            byte[] result = ReedSolomonAlgorithm.Encode(bytesa, 7, ErrorCorrectionCodeType.QRCode);
 
+            string a = qrText.Text; // on prend le text input
+            byte[] bytesa = u8.GetBytes(a); // on le converti en bytes
+            byte[] result = ReedSolomonAlgorithm.Encode(bytesa, 7, ErrorCorrectionCodeType.QRCode); // reed solomons qui nous donne par exemple 296 76 25 ...
 
+            // CORRECTIONS 7 donc minimum 8 caracteres necessaires dans INPUT
 
             string message = bytesDonnees; // pas necessaire mais on creer un nouveau string pour bytesdonnes + corrections 
+
             foreach (byte i in result)
             {
                 message += DecimalToBytes(i, 8); //8 car on veut un octet pour chaque mot de corrections
             }
 
+            // Read Solomon marche maintenant
+            // Reed Solomon Terminé !!!!
 
-            //Test
-            string teststring = "";
-            foreach(char i in bytesContinu)
-            {
-                teststring += i + " ";
-            }
-            test.Text = message.Length + "";
+            // Dernier etape : Marquage
+            // 0 donne BLANC et 1 donne NOIR
+            // Modeles d'Alignement dans VERSION 2 ! PAS V1 !
 
 
+            Bitmap bmp = new Bitmap(210, 210);
+            Graphics g = Graphics.FromImage(bmp);
+            g.Clear(System.Drawing.Color.White);
 
+            bmp.Save("./Resource/woah.bmp");
+            
+            string QRImageLocation = "./Resource/QRbase.bmp"; // Fichier base de QRCode
+            MyImage imageOriginal = new MyImage(QRImageLocation);
+            test.Text = imageOriginal.partieImage.GetLength(1) + "";
+            byte[,] monImage = imageOriginal.partieImage; //partie image avec RGB separé
+
+            //Noir par défaut:
+
+
+            // Construction Recherche des Motifs :
+
+            //Bords Noir :
+
+
+            // IMPORTANT : Chaque pixel vertical vaut : 100;   car j'ai pris une image 2100*2100 de base donc fois 100
+            //             Chaque pixel horizontal vaut : 300;
+
+            // LES SEPARATEURS
+            monImage = Carree(0, 0, monImage, 6, 0);
+            monImage = Carree(100, 300, monImage, 5, 255);
+            monImage = Carree(200, 600, monImage, 4, 0);
+
+            monImage = Carree(1400, 0, monImage, 7, 0);
+            monImage = Carree(100, 300, monImage, 5, 255);
+            monImage = Carree(200, 600, monImage, 4, 0);
+
+
+            // MOTIFS DE RECHERCHES 
+            // motif en bas à gauche
+            //monImage = CreerCarree(300, 900, monImage, 3, 0);  // 3 en vertical et 3 en horiz mais fois 3 donc 9 === 900
+            //monImage = CreerCarree(300, 900, monImage, 2, 255);
+            //monImage = CreerCarree(300, 900, monImage, 1, 0);
+
+            // motif en haut à gauche
+            //monImage = CreerCarree(1800, 3000, monImage, 3, 0);   // 21-3 donc 18 === 1800
+            //monImage = CreerCarree(1800, 3000, monImage, 2, 255);
+            //monImage = CreerCarree(1800, 3000, monImage, 1, 0);
+
+            // motif en haut à gauche
+            // monImage = CreerCarree(1800, 900, monImage, 3, 0);   // 21-3 donc 18 === 1800
+            //monImage = CreerCarree(1800, 900, monImage, 2, 255);
+            //monImage = CreerCarree(1800, 900, monImage, 1, 0);
+
+            // motif en haut à droite
+            //monImage = CreerCarree(1800, 5400, monImage, 3, 0);   // (21*3)-(3*3) donc 18 === 1800
+            //monImage = CreerCarree(1800, 5400, monImage, 2, 255);
+            //monImage = CreerCarree(1800, 5400, monImage, 1, 0);
+
+
+
+
+
+
+
+            imageOriginal.partieImage = monImage;
+            imageOriginal.Image_to_File();
+
+            imageQR.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
 
 
             //Changement de Version selon n° caracs.
@@ -235,5 +296,38 @@ namespace ProjetInfo
             //char c= Convert.ToChar(qrText.Text);
             //test.Text = StringToNum('H') + " ";
         }
+
+
+        // Cette methode sert à creer une carre 
+        // x et y signifie les coordonnees de centre dans la matrice ou on veut creer une Carree
+        // NIVEAU est le niveau ou etages autour le centre de caree
+        public byte[,] CreerCarree(int x, int y, byte[,] monimage, int niveau, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
+        {
+            for (int i = -100* niveau; i < 100* niveau; i++)
+            {
+                for (int j = -300* niveau; j < 300* niveau; j++)  //900 car RGB donc largeur * 3
+                {
+                    monimage[x+i, y+j] = couleur;
+                }
+            }
+
+
+            return monimage;
+        }
+
+        public byte[,] Carree(int x, int y, byte[,] monimage, int niveau, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
+        {
+            for (int i = x; i < 100 * niveau; i++)
+            {
+                for (int j = y; j < 300 * niveau; j++)  //900 car RGB donc largeur * 3
+                {
+                    monimage[i, j] = couleur;
+                }
+            }
+
+
+            return monimage;
+        }
+
     }
 }

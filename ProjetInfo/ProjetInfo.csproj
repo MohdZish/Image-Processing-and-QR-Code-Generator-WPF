@@ -140,6 +140,12 @@
   <ItemGroup>
     <Resource Include="Images\lenna.bmp" />
     <Resource Include="Images\Sortie.bmp" />
+    <Content Include="Images\imageQR.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resource\imageQR.bmp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resource\tempimg.bmp">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
