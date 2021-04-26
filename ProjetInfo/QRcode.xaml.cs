@@ -227,8 +227,28 @@ namespace ProjetInfo
             string QRImageLocation = "./Resource/QRbase.bmp"; // Fichier base de QRCode
             MyImage imageOriginal = new MyImage(QRImageLocation);
             test.Text = imageOriginal.partieImage.GetLength(1) + "";
-            byte[,] monImage = imageOriginal.partieImage; //partie image avec RGB separé
+            byte[,] imageRGB = imageOriginal.partieImage; //partie image avec RGB separé
 
+            byte[,] monImage = new byte[imageOriginal.hauteur, imageOriginal.largeur];
+
+            for (int i = 0; i < monImage.GetLength(0); i++)
+            {
+                for (int j = 0; j < monImage.GetLength(1); j++)
+                {
+                    monImage[i, j] = 255;
+                }
+            }
+
+            // UNe matrice 21 * 21 parfait pour V1, APRES on converti cette matrice à 2100*2100 pour l'image final
+            byte[,] tab21 = new byte[21, 21];
+
+            for (int i = 0; i < tab21.GetLength(0); i++)
+            {
+                for (int j = 0; j < tab21.GetLength(1); j++)
+                {
+                    tab21[i, j] = 190;
+                }
+            }
             //Noir par défaut:
 
 
@@ -240,14 +260,20 @@ namespace ProjetInfo
             // IMPORTANT : Chaque pixel vertical vaut : 100;   car j'ai pris une image 2100*2100 de base donc fois 100
             //             Chaque pixel horizontal vaut : 300;
 
-            // LES SEPARATEURS
-            monImage = Carree(0, 0, monImage, 6, 0);
-            monImage = Carree(100, 300, monImage, 5, 255);
-            monImage = Carree(200, 600, monImage, 4, 0);
+            // LES SEPARATEURS  --  certains lignes sont temporaire car apres sera effacé par noir ! 
+            //tab21 = Carree(0, 0, tab21, 8, 255); //en bas à gauche
+            //tab21 = Carree(8, 0, tab21, 8, 255); //en haut à gauche
 
-            monImage = Carree(1400, 0, monImage, 7, 0);
-            monImage = Carree(100, 300, monImage, 5, 255);
-            monImage = Carree(200, 600, monImage, 4, 0);
+            for (int i = 0; i < tab21.GetLength(0); i++) 
+            {
+                tab21[i, 7] = 255; //en bas à gauche
+                tab21[i, 13] = 255;
+            }
+            for (int i = 0; i < tab21.GetLength(1); i++)
+            {
+                tab21[7, i] = 255;
+                tab21[13, i] = 255;
+            }
 
 
             // MOTIFS DE RECHERCHES 
@@ -257,19 +283,19 @@ namespace ProjetInfo
             //monImage = CreerCarree(300, 900, monImage, 1, 0);
 
             // motif en haut à gauche
-            //monImage = CreerCarree(1800, 3000, monImage, 3, 0);   // 21-3 donc 18 === 1800
-            //monImage = CreerCarree(1800, 3000, monImage, 2, 255);
-            //monImage = CreerCarree(1800, 3000, monImage, 1, 0);
+            tab21 = CarreeCentre(3, 3, tab21, 3, 0);
+            tab21 = CarreeCentre(3, 3, tab21, 2, 255);
+            tab21 = CarreeCentre(3, 3, tab21, 1, 0);
 
             // motif en haut à gauche
-            // monImage = CreerCarree(1800, 900, monImage, 3, 0);   // 21-3 donc 18 === 1800
-            //monImage = CreerCarree(1800, 900, monImage, 2, 255);
-            //monImage = CreerCarree(1800, 900, monImage, 1, 0);
+            tab21 = CarreeCentre(17, 3, tab21, 3, 0);
+            tab21 = CarreeCentre(17, 3, tab21, 2, 255);
+            tab21 = CarreeCentre(17, 3, tab21, 1, 0);
 
             // motif en haut à droite
-            //monImage = CreerCarree(1800, 5400, monImage, 3, 0);   // (21*3)-(3*3) donc 18 === 1800
-            //monImage = CreerCarree(1800, 5400, monImage, 2, 255);
-            //monImage = CreerCarree(1800, 5400, monImage, 1, 0);
+            tab21 = CarreeCentre(17, 17, tab21, 3, 0);
+            tab21 = CarreeCentre(17, 17, tab21, 2, 255);
+            tab21 = CarreeCentre(17, 17, tab21, 1, 0);
 
 
 
@@ -277,7 +303,59 @@ namespace ProjetInfo
 
 
 
-            imageOriginal.partieImage = monImage;
+
+
+
+
+            // Converter 21*21 =====> 2100*2100
+            int x = 0;
+            int y = 0;
+            int comptx = 0;
+            int compty = 0;
+            int testnum = 0;
+            for (int i = 0; i < monImage.GetLength(0); i++)
+            {
+
+                for (int j = 0; j < monImage.GetLength(1); j++)
+                {
+                    monImage[i, j] = tab21[x, y];
+                    compty++;
+                    if (compty == 100)
+                    {
+                        y++;
+                        compty = 0;
+
+                    }
+                }
+                compty = 0;
+                comptx++;
+                if (comptx == 100)
+                {
+                    x++;
+                    comptx = 0;
+                    testnum++;
+                }
+                y = 0;
+            }
+            test.Text = testnum + "";
+
+
+            int compte = 0;
+            for (int i = 0; i < imageRGB.GetLength(0); i++)
+            {
+                for (int j = 0; j < imageRGB.GetLength(1); j = j + 3)
+                {
+                    imageRGB[i, j] = monImage[i, compte];
+                    imageRGB[i, j + 1] = monImage[i, compte];
+                    imageRGB[i, j + 2] = monImage[i, compte];
+                    compte++;
+                }
+                compte = 0;
+            }
+
+
+
+            imageOriginal.partieImage = imageRGB;
             imageOriginal.Image_to_File();
 
             imageQR.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
@@ -301,11 +379,11 @@ namespace ProjetInfo
         // Cette methode sert à creer une carre 
         // x et y signifie les coordonnees de centre dans la matrice ou on veut creer une Carree
         // NIVEAU est le niveau ou etages autour le centre de caree
-        public byte[,] CreerCarree(int x, int y, byte[,] monimage, int niveau, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
+        public byte[,] CarreeCentre(int x, int y, byte[,] monimage, int niveau, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
         {
-            for (int i = -100* niveau; i < 100* niveau; i++)
+            for (int i = - niveau; i <= niveau; i++)
             {
-                for (int j = -300* niveau; j < 300* niveau; j++)  //900 car RGB donc largeur * 3
+                for (int j = -niveau; j <= niveau; j++)  
                 {
                     monimage[x+i, y+j] = couleur;
                 }
@@ -315,16 +393,15 @@ namespace ProjetInfo
             return monimage;
         }
 
-        public byte[,] Carree(int x, int y, byte[,] monimage, int niveau, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
+        public byte[,] Carree(int x, int y, byte[,] monimage, int longeur, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
         {
-            for (int i = x; i < 100 * niveau; i++)
+            for (int i = x; i < longeur; i++)
             {
-                for (int j = y; j < 300 * niveau; j++)  //900 car RGB donc largeur * 3
+                for (int j = y; j < longeur; j++)  
                 {
                     monimage[i, j] = couleur;
                 }
             }
-
 
             return monimage;
         }
