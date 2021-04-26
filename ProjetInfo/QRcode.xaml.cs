@@ -261,26 +261,13 @@ namespace ProjetInfo
             //             Chaque pixel horizontal vaut : 300;
 
             // LES SEPARATEURS  --  certains lignes sont temporaire car apres sera effacé par noir ! 
-            //tab21 = Carree(0, 0, tab21, 8, 255); //en bas à gauche
-            //tab21 = Carree(8, 0, tab21, 8, 255); //en haut à gauche
+            tab21 = Carree(0, 0, tab21, 8, 255); //en bas à gauche
+            tab21 = Carree(13, 0, tab21, 8, 255); //en haut à gauche
+            tab21 = Carree(13, 13, tab21, 8, 255); //en haut à droite
 
-            for (int i = 0; i < tab21.GetLength(0); i++) 
-            {
-                tab21[i, 7] = 255; //en bas à gauche
-                tab21[i, 13] = 255;
-            }
-            for (int i = 0; i < tab21.GetLength(1); i++)
-            {
-                tab21[7, i] = 255;
-                tab21[13, i] = 255;
-            }
-
+            // Separateurs fini
 
             // MOTIFS DE RECHERCHES 
-            // motif en bas à gauche
-            //monImage = CreerCarree(300, 900, monImage, 3, 0);  // 3 en vertical et 3 en horiz mais fois 3 donc 9 === 900
-            //monImage = CreerCarree(300, 900, monImage, 2, 255);
-            //monImage = CreerCarree(300, 900, monImage, 1, 0);
 
             // motif en haut à gauche
             tab21 = CarreeCentre(3, 3, tab21, 3, 0);
@@ -297,7 +284,21 @@ namespace ProjetInfo
             tab21 = CarreeCentre(17, 17, tab21, 2, 255);
             tab21 = CarreeCentre(17, 17, tab21, 1, 0);
 
+            //Module des Recherches FINI
 
+
+            // MOTIFS DES SYNCHRONISATIONS
+            // Juste des lignes simple
+
+            for (int i = 8; i < 13; i++)  // Ligne Synchro TOP
+            {
+                tab21[14, i] = 80;
+            }
+
+            for (int i = 8; i < 13; i++)  // Ligne Synchro TOP
+            {
+                tab21[i, 6] = 80;
+            }
 
 
 
@@ -395,11 +396,11 @@ namespace ProjetInfo
 
         public byte[,] Carree(int x, int y, byte[,] monimage, int longeur, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
         {
-            for (int i = x; i < longeur; i++)
+            for (int i = 0; i < longeur; i++)
             {
-                for (int j = y; j < longeur; j++)  
+                for (int j = 0; j < longeur; j++)  
                 {
-                    monimage[i, j] = couleur;
+                    monimage[x+i, y+j] = couleur;
                 }
             }
 
