@@ -260,6 +260,12 @@ namespace ProjetInfo
             // IMPORTANT : Chaque pixel vertical vaut : 100;   car j'ai pris une image 2100*2100 de base donc fois 100
             //             Chaque pixel horizontal vaut : 300;
 
+            // Lignes Interdits - lignes qu'on utilise pas ----- VALEUR 60
+            tab21 = Carree(12, 0, tab21, 9, 60); //en haut à gauche
+            tab21 = Carree(12, 13, tab21, 8, 60); //en haut à droite
+            tab21 = Carree(0, 1, tab21, 8, 60); //en haut à gauche
+
+
             // LES SEPARATEURS  --  certains lignes sont temporaire car apres sera effacé par noir ! 
             tab21 = Carree(0, 0, tab21, 8, 255); //en bas à gauche
             tab21 = Carree(13, 0, tab21, 8, 255); //en haut à gauche
@@ -330,6 +336,58 @@ namespace ProjetInfo
             // Motifs de sombre fini
 
 
+            
+
+
+
+
+
+            // MESSAGE est le donne avec tous les BYTES + CORRECTIONS en string !
+
+            test.Text = message.Length + "";
+
+            // BYTES -------------------------> QR Code !!!!
+
+            // ZIGZAG /\/\
+
+            int x1 = 0;
+            int y1 = 20;
+            bool cotefait = false;
+            for(int i = 0; i < 20; i++)
+            {
+                if(message[i] == '1')
+                {
+                    tab21[x1, y1] = 0;
+                    if(cotefait == false)
+                    {
+                        y1--;
+                        cotefait = true;
+                    }
+                    else
+                    {
+                        x1++;
+                        y1++;
+                        cotefait = false;
+                    }
+                    
+                }
+                if (message[i] == '0')
+                {
+                    tab21[x1, y1] = 255;
+                    if (cotefait == false)
+                    {
+                        y1--;
+                        cotefait = true;
+                    }
+                    else
+                    {
+                        x1++;
+                        y1++;
+                        cotefait = false;
+                    }
+                }
+            }
+            test.Text = message + "";
 
 
 
@@ -364,7 +422,6 @@ namespace ProjetInfo
                 }
                 y = 0;
             }
-            test.Text = testnum + "";
 
 
             int compte = 0;
