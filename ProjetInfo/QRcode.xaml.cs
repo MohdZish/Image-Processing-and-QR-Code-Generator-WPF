@@ -290,18 +290,44 @@ namespace ProjetInfo
             // MOTIFS DES SYNCHRONISATIONS
             // Juste des lignes simple
 
+            bool noir = true;
             for (int i = 8; i < 13; i++)  // Ligne Synchro TOP
             {
-                tab21[14, i] = 80;
+                if (noir)
+                {
+                    tab21[14, i] = 0;
+                    noir = false;
+                }
+                else
+                {
+                    tab21[14, i] = 255;
+                    noir = true;
+                }
             }
 
+            noir = true;
             for (int i = 8; i < 13; i++)  // Ligne Synchro TOP
             {
-                tab21[i, 6] = 80;
+                if (noir)
+                {
+                    tab21[i, 6] = 0;
+                    noir = false;
+                }
+                else
+                {
+                    tab21[i, 6] = 255;
+                    noir = true;
+                }
             }
 
+            // Motifs de Synchro fini
 
+            // MOTIFS DE SOMBRE
 
+            int nombreVerion = 1;
+            tab21[7, 8] = 0;
+
+            // Motifs de sombre fini
 
 
 
