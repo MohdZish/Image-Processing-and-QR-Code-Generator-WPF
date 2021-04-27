@@ -71,6 +71,8 @@ namespace ProjetInfo
             return bytes;
         }
 
+      
+
         private void CreerQR_Click(object sender, RoutedEventArgs e)
         {
             // Alphanumerique donc 0010
@@ -81,12 +83,12 @@ namespace ProjetInfo
 
             int nombreCaracs = qrText.Text.Length;
 
-            string val = DecimalToBytes(nombreCaracs, 9);
+            string nombreCaracBYTES = DecimalToBytes(nombreCaracs, 9);
 
             //Convertir Text en 11 bits//
             //Couper Texte en couples de 2
             string textqr = qrText.Text; // phrase ecrit
-            //textqr = textqr.ToUpper();
+            textqr = textqr.ToUpper();
             var coupleLettres = new List<string>();  //contient {"He", "ll", "o ", "wo", "rl", "d"}
             int compt = 0;
             int len = textqr.Length/2;
@@ -121,7 +123,7 @@ namespace ProjetInfo
                     
                 }
             }
-            //test.Text = resultatDecimal[2] + " ";
+            
 
             //Calculs DECIMAL NUM. ==> BINAIRE 11 Bites (fin page 18) // ex :  779 -> 01100001011 
 
@@ -139,8 +141,8 @@ namespace ProjetInfo
 
                 resultatBytes.Add(valbytes);
             }
-            
             //test.Text = resultatBytes[2] + " ";
+
 
 
             // Maintenant on a tous les binaires de notre phrase dans resultatBytes
@@ -153,23 +155,29 @@ namespace ProjetInfo
             //avec he ll o  wo rl d    on a : 11 + 11 + 11 + 11 + 11 + 6 = 61
 
             //int longeurBinaire = 0;
-            List<char> bytesContinu = new List<char>(); //Contient 0110000101101111000110 ...
-
             string bytesDonnees = "";
+
+            // Ajouter l'Indicateur
+            bytesDonnees += "0010"; // car AlphaNumerique
+
+            // Ajouter Nombre de caracteres 9 bites
+            bytesDonnees += nombreCaracBYTES;
+
 
             foreach (string bin in resultatBytes) //on prend 01000100
             {
                 bytesDonnees += bin;
             }
-
+           
             //ajouter 0 à la fin (4 maximum) si < 152
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 if(bytesDonnees.Length < 152)
                 {
                     bytesDonnees += "0";
                 }
             }
+            
 
             //nombre de bits est un MULTIPLE DE 8 ?
             //Sinon ajoute encore des 0
@@ -178,35 +186,92 @@ namespace ProjetInfo
             {
                 bytesDonnees += "0";
             }
+            
 
             // Toujours pas 152 ?
             // Ajouter 11101100 00010001 (236 et 17) des specifications QRcode pour remplir vide
-
-            while (bytesDonnees.Length < 152) 
+            int calcul = (152 - bytesDonnees.Length) / 8;
+            /*while (bytesDonnees.Length < 152) 
             {
                 bytesDonnees += "1110110000010001"; 
-            }
+            }*/
 
+            bool change = true;
+            for (int i = 0; i < calcul; i++)
+            {
+                if (change)
+                {
+                    bytesDonnees += "11101100";
+                    change = false;
+                }
+                else
+                {
+                    bytesDonnees += "00010001";
+                    change = true;
+                }
+                test.Text = i + "";
+            }
+            test.Text = bytesDonnees.Length + "";
 
             // Maintenant REED SOLOMONS
 
             // Le message final est de forme : bytedonnees + ERREUR CORREC de REEDS
             // Donc faisons Reed Solomons pour trouver les bytes de corrections
             Encoding u8 = Encoding.UTF8;
-
             string a = qrText.Text; // on prend le text input
+            a = a.ToUpper();
             byte[] bytesa = u8.GetBytes(a); // on le converti en bytes
-            byte[] result = ReedSolomonAlgorithm.Encode(bytesa, 7, ErrorCorrectionCodeType.QRCode); // reed solomons qui nous donne par exemple 296 76 25 ...
+
+            string[] stringDonnee = new string[bytesDonnees.Length / 8];
+
+
+            /*int debut = 0; 
+            for(int i = 0; i < stringDonnee.Length; i++)
+            {
+                stringDonnee[i] = bytesDonnees.Substring(debut, 8+debut);
+                debut = debut+8;
+            }*/
+
+            int tempcount = 0;
+            int index = -1;
+            foreach(char c in bytesDonnees)
+            {
+                if(tempcount % 8 == 0)
+                {
+                    index++;
+                }
+                stringDonnee[index] += c;
+                tempcount++;
+            }
+
+            byte[] bytesPourRS = new byte[bytesDonnees.Length / 8];
+
+            for(int i = 0; i < stringDonnee.Length; i++)
+            {
+                bytesPourRS[i] = Convert.ToByte(stringDonnee[i], 2);
+            }
+            test.Text = stringDonnee[4];
+
+            //string res = Encoding.UTF8.GetString(bytes); //interessant ! 10 -> 1
+
+            byte[] result = ReedSolomonAlgorithm.Encode(bytesPourRS, 7, ErrorCorrectionCodeType.QRCode); // reed solomons qui nous donne par exemple 296 76 25 ...
 
             // CORRECTIONS 7 donc minimum 8 caracteres necessaires dans INPUT
 
             string message = bytesDonnees; // pas necessaire mais on creer un nouveau string pour bytesdonnes + corrections 
 
+            string erreurcorrection = "";
+            
             foreach (byte i in result)
             {
-                message += DecimalToBytes(i, 8); //8 car on veut un octet pour chaque mot de corrections
+                erreurcorrection += DecimalToBytes(i, 8); //8 car on veut un octet pour chaque mot de corrections
             }
 
+            message += erreurcorrection;
+
+            //message += "11010001111011111100010011001111010011101100001101101101";
+
+            //message += "11010001111011111100010011001111010011101100001101101101";
             // Read Solomon marche maintenant
             // Reed Solomon Terminé !!!!
 
@@ -215,15 +280,10 @@ namespace ProjetInfo
             // Modeles d'Alignement dans VERSION 2 ! PAS V1 !
 
 
-            Bitmap bmp = new Bitmap(210, 210);
-            Graphics g = Graphics.FromImage(bmp);
-            g.Clear(System.Drawing.Color.White);
 
-            bmp.Save("./Resource/woah.bmp");
-            
+
             string QRImageLocation = "./Resource/QRbase.bmp"; // Fichier base de QRCode
             MyImage imageOriginal = new MyImage(QRImageLocation);
-            test.Text = imageOriginal.partieImage.GetLength(1) + "";
             byte[,] imageRGB = imageOriginal.partieImage; //partie image avec RGB separé
 
             byte[,] monImage = new byte[imageOriginal.hauteur, imageOriginal.largeur];
@@ -327,7 +387,6 @@ namespace ProjetInfo
 
             // MOTIFS DE SOMBRE
 
-            int nombreVerion = 1;
             tab21[7, 8] = 0;
 
             // Motifs de sombre fini
@@ -335,15 +394,11 @@ namespace ProjetInfo
 
 
 
-
-
-
-            test.Text = message + "";
             // MESSAGE est le donne avec tous les BYTES + CORRECTIONS en string !
-            message = "0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010";
+           // message = "0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010";
             //"0100000100010100100001100101011011000110110001101111001011000010000001110111011011110111001001101100011001000010000100100000001100010011001000110011000010000101101010010101111000000111000010100011011011001001";
             //0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010
-            message = "0100000010110100100001100101011011000110110001101111001000000111011101101111011100100110110001100100000011101100000100011110110000010001111011000001000100110000000010111111100100100001110000011110101011000101";
+        //message = "0100000010110100100001100101011011000110110001101111001000000111011101101111011100100110110001100100000011101100000100011110110000010001111011000001000100110000000010111111100100100001110000011110101011000101";
             // BYTES -------------------------> QR Code !!!!
 
             // ZIGZAG /\/\
@@ -352,7 +407,6 @@ namespace ProjetInfo
             int y1 = 20;
             bool cotefait = false;
             bool descente = false;
-            string tester = "yes";
 
 
             for (int i = 0; i < message.Length; i++)
@@ -414,7 +468,6 @@ namespace ProjetInfo
 
                 else
                 {
-                    tester = "yeahhhhh";
                     if (cotefait == false)
                     {
                         y1--;
@@ -445,7 +498,6 @@ namespace ProjetInfo
                             {
                                 if (tab21[x1 - 1, y1] == Convert.ToByte(250))// 250 -> separateur EXCEPTION Gauche
                                 {
-                                    tester = "yoooo";
                                     y1--;
                                     cotefait = false;
                                     descente = false;
@@ -470,6 +522,7 @@ namespace ProjetInfo
                 }
             }
 
+
             // MASQUAGE !!!!
             byte[,] mask0 = new byte[21,21];
 
@@ -490,7 +543,6 @@ namespace ProjetInfo
 
 
             // masking ici
-            test.Text = "avant :" + tab21[0, 20] + " " + mask0[0, 20];
             bool masqer = true;
             if (masqer)
             {
@@ -511,7 +563,6 @@ namespace ProjetInfo
                 }
             }
             
-            test.Text += " apres :" + tab21[0, 20] + " " + mask0[0, 20];
 
             // Masquage Fini
 
@@ -653,9 +704,6 @@ namespace ProjetInfo
             {
                 //version 2
             }
-
-            //char c= Convert.ToChar(qrText.Text);
-            //test.Text = StringToNum('H') + " ";
         }
 
 
