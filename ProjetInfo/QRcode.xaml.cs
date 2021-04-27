@@ -89,7 +89,7 @@ namespace ProjetInfo
             //Convertir Text en 11 bits//
             //Couper Texte en couples de 2
             string textqr = qrText.Text; 
-            textqr = textqr.ToUpper();
+            //textqr = textqr.ToUpper();
             var coupleLettres = new List<string>();  //contient {"He", "ll", "o ", "wo", "rl", "d"}
             int compt = 0;
             int len = textqr.Length/2;
@@ -267,9 +267,9 @@ namespace ProjetInfo
 
 
             // LES SEPARATEURS  --  certains lignes sont temporaire car apres sera effacé par noir ! 
-            tab21 = Carree(0, 0, tab21, 8, 255); //en bas à gauche
-            tab21 = Carree(13, 0, tab21, 8, 255); //en haut à gauche
-            tab21 = Carree(13, 13, tab21, 8, 255); //en haut à droite
+            tab21 = Carree(0, 0, tab21, 8, 250); //en bas à gauche
+            tab21 = Carree(13, 0, tab21, 8, 250); //en haut à gauche
+            tab21 = Carree(13, 13, tab21, 8, 250); //en haut à droite
 
             // Separateurs fini
 
@@ -336,15 +336,16 @@ namespace ProjetInfo
             // Motifs de sombre fini
 
 
-            
 
 
 
 
 
+            test.Text = message + "";
             // MESSAGE est le donne avec tous les BYTES + CORRECTIONS en string !
-
-            test.Text = message.Length + "";
+            message = "0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010";
+                //"0100000100010100100001100101011011000110110001101111001011000010000001110111011011110111001001101100011001000010000100100000001100010011001000110011000010000101101010010101111000000111000010100011011011001001";
+                //0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010
 
             // BYTES -------------------------> QR Code !!!!
 
@@ -355,7 +356,7 @@ namespace ProjetInfo
             bool cotefait = false;
             bool descente = false;
             string tester = "yes";
-            for (int i = 0; i < 155; i++)
+            for (int i = 0; i < 208; i++)
             {
                 byte couleur = 255;
                 if (message[i] == '1')
@@ -380,9 +381,18 @@ namespace ProjetInfo
                         // TESTS pour eviter regions interdits pendant MONTE !
                         if (x1 == 20 || tab21[x1 + 1, y1] == Convert.ToByte(60))
                         {
-                            y1--;
-                            cotefait = false;
-                            descente = true;
+                            if(tab21[x1, y1 - 1] == Convert.ToByte(255)) // partie gauche haut EXCEPTION BLANC
+                            {
+                                y1 = 5;
+                                cotefait = false;
+                                descente = true;
+                            }
+                            else
+                            {
+                                y1--;
+                                cotefait = false;
+                                descente = true;
+                            }
                         }
                         else
                         {
@@ -416,17 +426,38 @@ namespace ProjetInfo
                         // TESTS pour eviter regions interdits pendant DESCENTE !
                         if (x1 == 0 || tab21[x1 - 1, y1] == Convert.ToByte(60))
                         {
-                            y1--;
-                            cotefait = false;
-                            descente = false;
+                            if(tab21[x1, y1-1] == Convert.ToByte(60)) // partie gauche en bas EXCEPTION
+                            {
+                                x1 = 8;
+                                y1--;
+                                cotefait = false;
+                                descente = false;
+                            }
+                            else
+                            {
+                                y1--;
+                                cotefait = false;
+                                descente = false;
+                            }
                         }
                         else
                         {
-                            if (tab21[x1 - 1, y1] == Convert.ToByte(255) || tab21[x1 - 1, y1] == Convert.ToByte(0))
+                            if (tab21[x1 - 1, y1] == Convert.ToByte(255) || tab21[x1 - 1, y1] == Convert.ToByte(0) || tab21[x1 - 1, y1] == Convert.ToByte(250))
                             {
-                                x1 = x1 - 2;
-                                y1++;
-                                cotefait = false;
+                                if (tab21[x1 - 1, y1] == Convert.ToByte(250))// 250 -> separateur EXCEPTION Gauche
+                                {
+                                    tester = "yoooo";
+                                    y1--;
+                                    cotefait = false;
+                                    descente = false;
+                                }
+                                else
+                                {
+                                    x1 = x1 - 2;
+                                    y1++;
+                                    cotefait = false;
+                                }
+                                
                             }
                             else
                             {
@@ -440,10 +471,23 @@ namespace ProjetInfo
                 }
 
             }
-            test.Text = tester + "";
 
 
+            for(int i = 0; i < tab21.GetLength(0); i++)
+            {
+                for (int j = 0; j < tab21.GetLength(0); j++)
+                {
+                    if(tab21[i,j] == Convert.ToByte(60))
+                    {
+                        tab21[i, j] = Convert.ToByte(255);
+                    }
 
+                    if (tab21[i, j] == Convert.ToByte(250))
+                    {
+                        tab21[i, j] = Convert.ToByte(255);
+                    }
+                }
+            }
 
 
 
