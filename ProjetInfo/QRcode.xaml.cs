@@ -83,12 +83,9 @@ namespace ProjetInfo
 
             string val = DecimalToBytes(nombreCaracs, 9);
 
-            test.Text = val + " ";
-
-
             //Convertir Text en 11 bits//
             //Couper Texte en couples de 2
-            string textqr = qrText.Text; 
+            string textqr = qrText.Text; // phrase ecrit
             //textqr = textqr.ToUpper();
             var coupleLettres = new List<string>();  //contient {"He", "ll", "o ", "wo", "rl", "d"}
             int compt = 0;
@@ -516,8 +513,55 @@ namespace ProjetInfo
             
             test.Text += " apres :" + tab21[0, 20] + " " + mask0[0, 20];
 
+            // Masquage Fini
 
+            // VERSIONS MASQUE + CORRECTIONS INFO
+            // https://www.thonky.com/qr-code-tutorial/format-version-information
 
+            string infoVERSIONS = "111011111000100"; // donnée page 21 --- Bits de L et masque 0
+
+            byte[] couleurscorrect = new byte[15];
+
+            for(int i = 0; i < couleurscorrect.Length; i++)
+            {
+                byte newval = 0;
+                if (infoVERSIONS[i] == '1')
+                {
+                    newval = Convert.ToByte(0);
+                }
+                else
+                {
+                    newval = Convert.ToByte(255);
+                }
+                couleurscorrect[i] = newval;
+            }
+
+            //page 25
+            // 5 premiers
+            for(int i = 0; i < 6; i++)
+            {
+                tab21[12, i] = couleurscorrect[i];
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                tab21[i, 8] = couleurscorrect[i];
+            }
+
+            tab21[12, 7] = couleurscorrect[6];
+            tab21[12, 8] = couleurscorrect[7];
+            tab21[13, 8] = couleurscorrect[8];
+
+            //9-14
+            for (int i = 15; i < 21; i++)
+            {
+                tab21[i, 8] = couleurscorrect[i-15+9];
+            }
+
+            //7-14
+            for (int i = 13; i < 21; i++)
+            {
+                tab21[12, i] = couleurscorrect[i - 13 + 7];
+            }
 
             // Donner les bonnes couleurs
             for (int i = 0; i < tab21.GetLength(0); i++)
