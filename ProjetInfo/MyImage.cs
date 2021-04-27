@@ -103,5 +103,22 @@ namespace ProjetInfo
             File.WriteAllBytes("./Resource/tempimg.bmp", imgdonnees);
         }
 
+
+
+        public byte[] Convertir_Int_To_Endian(int a)
+        {
+            Byte[] tab = new byte[4];
+            int quotient;
+
+            for (int i = tab.Length - 1; i > -1; i--)
+            {
+                quotient = a / Convert.ToInt32(Math.Pow(256, i));
+
+                tab[i] = Convert.ToByte(quotient);
+            }
+
+            return tab;
+        }
+
     }
 }

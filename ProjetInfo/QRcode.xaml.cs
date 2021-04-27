@@ -276,19 +276,19 @@ namespace ProjetInfo
             // MOTIFS DE RECHERCHES 
 
             // motif en haut à gauche
-            tab21 = CarreeCentre(3, 3, tab21, 3, 0);
-            tab21 = CarreeCentre(3, 3, tab21, 2, 255);
-            tab21 = CarreeCentre(3, 3, tab21, 1, 0);
+            tab21 = CarreeCentre(3, 3, tab21, 3, 1);
+            tab21 = CarreeCentre(3, 3, tab21, 2, 254);
+            tab21 = CarreeCentre(3, 3, tab21, 1, 1);
 
             // motif en haut à gauche
-            tab21 = CarreeCentre(17, 3, tab21, 3, 0);
-            tab21 = CarreeCentre(17, 3, tab21, 2, 255);
-            tab21 = CarreeCentre(17, 3, tab21, 1, 0);
+            tab21 = CarreeCentre(17, 3, tab21, 3, 1);
+            tab21 = CarreeCentre(17, 3, tab21, 2, 254);
+            tab21 = CarreeCentre(17, 3, tab21, 1, 1);
 
             // motif en haut à droite
-            tab21 = CarreeCentre(17, 17, tab21, 3, 0);
-            tab21 = CarreeCentre(17, 17, tab21, 2, 255);
-            tab21 = CarreeCentre(17, 17, tab21, 1, 0);
+            tab21 = CarreeCentre(17, 17, tab21, 3, 1);
+            tab21 = CarreeCentre(17, 17, tab21, 2, 254);
+            tab21 = CarreeCentre(17, 17, tab21, 1, 1);
 
             //Module des Recherches FINI
 
@@ -301,12 +301,12 @@ namespace ProjetInfo
             {
                 if (noir)
                 {
-                    tab21[14, i] = 0;
+                    tab21[14, i] = 1;
                     noir = false;
                 }
                 else
                 {
-                    tab21[14, i] = 255;
+                    tab21[14, i] = 254;
                     noir = true;
                 }
             }
@@ -316,12 +316,12 @@ namespace ProjetInfo
             {
                 if (noir)
                 {
-                    tab21[i, 6] = 0;
+                    tab21[i, 6] = 1;
                     noir = false;
                 }
                 else
                 {
-                    tab21[i, 6] = 255;
+                    tab21[i, 6] = 254;
                     noir = true;
                 }
             }
@@ -344,9 +344,9 @@ namespace ProjetInfo
             test.Text = message + "";
             // MESSAGE est le donne avec tous les BYTES + CORRECTIONS en string !
             message = "0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010";
-                //"0100000100010100100001100101011011000110110001101111001011000010000001110111011011110111001001101100011001000010000100100000001100010011001000110011000010000101101010010101111000000111000010100011011011001001";
-                //0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010
-
+            //"0100000100010100100001100101011011000110110001101111001011000010000001110111011011110111001001101100011001000010000100100000001100010011001000110011000010000101101010010101111000000111000010100011011011001001";
+            //0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010
+            message = "0100000010110100100001100101011011000110110001101111001000000111011101101111011100100110110001100100000011101100000100011110110000010001111011000001000100110000000010111111100100100001110000011110101011000101";
             // BYTES -------------------------> QR Code !!!!
 
             // ZIGZAG /\/\
@@ -356,7 +356,9 @@ namespace ProjetInfo
             bool cotefait = false;
             bool descente = false;
             string tester = "yes";
-            for (int i = 0; i < 208; i++)
+
+
+            for (int i = 0; i < message.Length; i++)
             {
                 byte couleur = 255;
                 if (message[i] == '1')
@@ -381,7 +383,7 @@ namespace ProjetInfo
                         // TESTS pour eviter regions interdits pendant MONTE !
                         if (x1 == 20 || tab21[x1 + 1, y1] == Convert.ToByte(60))
                         {
-                            if(tab21[x1, y1 - 1] == Convert.ToByte(255)) // partie gauche haut EXCEPTION BLANC
+                            if(tab21[x1, y1 - 1] == Convert.ToByte(254)) // partie gauche haut EXCEPTION BLANC
                             {
                                 y1 = 5;
                                 cotefait = false;
@@ -396,7 +398,7 @@ namespace ProjetInfo
                         }
                         else
                         {
-                            if (tab21[x1 + 1, y1] == Convert.ToByte(255) || tab21[x1 + 1, y1] == Convert.ToByte(0))
+                            if (tab21[x1 + 1, y1] == Convert.ToByte(254) || tab21[x1 + 1, y1] == Convert.ToByte(1))
                             {
                                 x1 = x1 + 2;
                                 y1++;
@@ -442,7 +444,7 @@ namespace ProjetInfo
                         }
                         else
                         {
-                            if (tab21[x1 - 1, y1] == Convert.ToByte(255) || tab21[x1 - 1, y1] == Convert.ToByte(0) || tab21[x1 - 1, y1] == Convert.ToByte(250))
+                            if (tab21[x1 - 1, y1] == Convert.ToByte(254) || tab21[x1 - 1, y1] == Convert.ToByte(1) || tab21[x1 - 1, y1] == Convert.ToByte(250))
                             {
                                 if (tab21[x1 - 1, y1] == Convert.ToByte(250))// 250 -> separateur EXCEPTION Gauche
                                 {
@@ -469,11 +471,56 @@ namespace ProjetInfo
                         }
                     }
                 }
+            }
 
+            // MASQUAGE !!!!
+            byte[,] mask0 = new byte[21,21];
+
+            for(int i = 0; i< mask0.GetLength(0); i++)
+            {
+                for (int j = 0; j < mask0.GetLength(1); j++)
+                {
+                    if ((i + j) % 2 == 0)
+                    {
+                        mask0[i, j] = 0;
+                    }
+                    else
+                    {
+                        mask0[i, j] = 255;
+                    }
+                }
             }
 
 
-            for(int i = 0; i < tab21.GetLength(0); i++)
+            // masking ici
+            test.Text = "avant :" + tab21[0, 20] + " " + mask0[0, 20];
+            bool masqer = true;
+            if (masqer)
+            {
+                for (int i = 0; i < tab21.GetLength(0); i++)
+                {
+                    for (int j = 0; j < tab21.GetLength(1); j++)
+                    {
+                        if ((tab21[i, j] == Convert.ToByte(255) && mask0[i, j] == Convert.ToByte(0)) || (tab21[i, j] == Convert.ToByte(0) && mask0[i, j] == Convert.ToByte(255)))
+                        {
+                            tab21[i, j] = Convert.ToByte(0);
+                        }
+
+                        else if((tab21[i, j] == Convert.ToByte(255) && mask0[i, j] == Convert.ToByte(255)) || (tab21[i, j] == Convert.ToByte(0) && mask0[i, j] == Convert.ToByte(0)))
+                        {
+                            tab21[i, j] = Convert.ToByte(255);
+                        }
+                    }
+                }
+            }
+            
+            test.Text += " apres :" + tab21[0, 20] + " " + mask0[0, 20];
+
+
+
+
+            // Donner les bonnes couleurs
+            for (int i = 0; i < tab21.GetLength(0); i++)
             {
                 for (int j = 0; j < tab21.GetLength(0); j++)
                 {
@@ -483,6 +530,15 @@ namespace ProjetInfo
                     }
 
                     if (tab21[i, j] == Convert.ToByte(250))
+                    {
+                        tab21[i, j] = Convert.ToByte(255);
+                    }
+
+                    if (tab21[i, j] == Convert.ToByte(1))
+                    {
+                        tab21[i, j] = Convert.ToByte(0);
+                    }
+                    if (tab21[i, j] == Convert.ToByte(254))
                     {
                         tab21[i, j] = Convert.ToByte(255);
                     }
