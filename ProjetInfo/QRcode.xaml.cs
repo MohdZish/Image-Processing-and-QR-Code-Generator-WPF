@@ -355,10 +355,10 @@ namespace ProjetInfo
             bool cotefait = false;
             bool descente = false;
             string tester = "yes";
-            for(int i = 0; i < 40; i++)
+            for (int i = 0; i < 155; i++)
             {
                 byte couleur = 255;
-                if(message[i] == '1')
+                if (message[i] == '1')
                 {
                     couleur = 0;
                 }
@@ -366,7 +366,9 @@ namespace ProjetInfo
 
                 // les testes pour choisir prochain bloc
 
-                if(descente == false)
+
+
+                if (descente == false)
                 {
                     if (cotefait == false)
                     {
@@ -375,7 +377,8 @@ namespace ProjetInfo
                     }
                     else  //aller en haut
                     {
-                        if (tab21[x1 + 1, y1] == Convert.ToByte(60))
+                        // TESTS pour eviter regions interdits pendant MONTE !
+                        if (x1 == 20 || tab21[x1 + 1, y1] == Convert.ToByte(60))
                         {
                             y1--;
                             cotefait = false;
@@ -383,9 +386,19 @@ namespace ProjetInfo
                         }
                         else
                         {
-                            x1++;
-                            y1++;
-                            cotefait = false;
+                            if (tab21[x1 + 1, y1] == Convert.ToByte(255) || tab21[x1 + 1, y1] == Convert.ToByte(0))
+                            {
+                                x1 = x1 + 2;
+                                y1++;
+                                cotefait = false;
+                            }
+
+                            else
+                            {
+                                x1++;
+                                y1++;
+                                cotefait = false;
+                            }
                         }
                     }
                 }
@@ -400,7 +413,8 @@ namespace ProjetInfo
                     }
                     else  //aller en haut
                     {
-                        if (tab21[x1 - 1, y1] == Convert.ToByte(60))
+                        // TESTS pour eviter regions interdits pendant DESCENTE !
+                        if (x1 == 0 || tab21[x1 - 1, y1] == Convert.ToByte(60))
                         {
                             y1--;
                             cotefait = false;
@@ -408,16 +422,23 @@ namespace ProjetInfo
                         }
                         else
                         {
-                            x1--;
-                            y1++;
-                            cotefait = false;
+                            if (tab21[x1 - 1, y1] == Convert.ToByte(255) || tab21[x1 - 1, y1] == Convert.ToByte(0))
+                            {
+                                x1 = x1 - 2;
+                                y1++;
+                                cotefait = false;
+                            }
+                            else
+                            {
+                                x1--;
+                                y1++;
+                                cotefait = false;
+                            }
+
                         }
                     }
                 }
 
-
-
-                
             }
             test.Text = tester + "";
 
