@@ -34,6 +34,26 @@ namespace ProjetInfo
 
             switch (val)
             {
+                case '0':
+                    return 0;
+                case '1':
+                    return 1;
+                case '2':
+                    return 2;
+                case '3':
+                    return 3;
+                case '4':
+                    return 4;
+                case '5':
+                    return 5;
+                case '6':
+                    return 6;
+                case '7':
+                    return 7;
+                case '8':
+                    return 8;
+                case '9':
+                    return 9;
                 case ' ':
                     return 36;
                 case '$':
@@ -106,7 +126,11 @@ namespace ProjetInfo
                 coupleLettres.Add(textqr[compt] + "" + textqr[compt + 1]);
                 compt = compt + 2;
             }
-            coupleLettres[coupleLettres.Count - 1] = Convert.ToString(coupleLettres[coupleLettres.Count - 1][0]);
+            if (finUnique)
+            {
+                coupleLettres[coupleLettres.Count - 1] = Convert.ToString(coupleLettres[coupleLettres.Count - 1][0]);
+
+            }
 
             //Calculs LETTRE COUPLE ==> DECIMAL NUMERIQUE (fin page 18) // ex : HE = 45^1*17 + 45^0 * 14 = 779
             var resultatDecimal = new List<double>(); //va conenir 779,966... par exemple
@@ -186,16 +210,11 @@ namespace ProjetInfo
             {
                 bytesDonnees += "0";
             }
-            
 
             // Toujours pas 152 ?
             // Ajouter 11101100 00010001 (236 et 17) des specifications QRcode pour remplir vide
             int calcul = (152 - bytesDonnees.Length) / 8;
-            /*while (bytesDonnees.Length < 152) 
-            {
-                bytesDonnees += "1110110000010001"; 
-            }*/
-
+   
             bool change = true;
             for (int i = 0; i < calcul; i++)
             {
@@ -209,9 +228,8 @@ namespace ProjetInfo
                     bytesDonnees += "00010001";
                     change = true;
                 }
-                test.Text = i + "";
             }
-            test.Text = bytesDonnees.Length + "";
+            
 
             // Maintenant REED SOLOMONS
 
@@ -224,13 +242,6 @@ namespace ProjetInfo
 
             string[] stringDonnee = new string[bytesDonnees.Length / 8];
 
-
-            /*int debut = 0; 
-            for(int i = 0; i < stringDonnee.Length; i++)
-            {
-                stringDonnee[i] = bytesDonnees.Substring(debut, 8+debut);
-                debut = debut+8;
-            }*/
 
             int tempcount = 0;
             int index = -1;
@@ -250,7 +261,6 @@ namespace ProjetInfo
             {
                 bytesPourRS[i] = Convert.ToByte(stringDonnee[i], 2);
             }
-            test.Text = stringDonnee[4];
 
             //string res = Encoding.UTF8.GetString(bytes); //interessant ! 10 -> 1
 
@@ -269,18 +279,11 @@ namespace ProjetInfo
 
             message += erreurcorrection;
 
-            //message += "11010001111011111100010011001111010011101100001101101101";
-
-            //message += "11010001111011111100010011001111010011101100001101101101";
-            // Read Solomon marche maintenant
             // Reed Solomon Terminé !!!!
 
             // Dernier etape : Marquage
             // 0 donne BLANC et 1 donne NOIR
             // Modeles d'Alignement dans VERSION 2 ! PAS V1 !
-
-
-
 
             string QRImageLocation = "./Resource/QRbase.bmp"; // Fichier base de QRCode
             MyImage imageOriginal = new MyImage(QRImageLocation);
@@ -395,10 +398,6 @@ namespace ProjetInfo
 
 
             // MESSAGE est le donne avec tous les BYTES + CORRECTIONS en string !
-           // message = "0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010";
-            //"0100000100010100100001100101011011000110110001101111001011000010000001110111011011110111001001101100011001000010000100100000001100010011001000110011000010000101101010010101111000000111000010100011011011001001";
-            //0100000010110100100001100101011011000110110001101111001000000101011101101111011100100110110001100100000011101100000100011110110000010001111011000001000110001011110000101000010011110011010010000111001100001010
-        //message = "0100000010110100100001100101011011000110110001101111001000000111011101101111011100100110110001100100000011101100000100011110110000010001111011000001000100110000000010111111100100100001110000011110101011000101";
             // BYTES -------------------------> QR Code !!!!
 
             // ZIGZAG /\/\
@@ -419,8 +418,6 @@ namespace ProjetInfo
                 tab21[x1, y1] = couleur;
 
                 // les testes pour choisir prochain bloc
-
-
 
                 if (descente == false)
                 {

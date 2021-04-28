@@ -63,6 +63,7 @@ namespace ProjetInfo
             }
 
             BitmapImage bitmap = new BitmapImage();
+            
             bitmap.BeginInit();
             
 
@@ -75,11 +76,14 @@ namespace ProjetInfo
                 //Pour trouver nom du fichier
                 string originallocation = Convert.ToString(imgOriginel.Source);
                 string result = originallocation.Substring(originallocation.LastIndexOf('/') + 1);
-                imgnomtxt.Text = "Nom Image : " + result;
-                
+
                 System.IO.File.Copy(filename, "./Resource/originalimg.bmp", true);
 
                 cheminOriginal = "./Resource/originalimg.bmp";
+                MyImage imageOriginal = new MyImage(cheminOriginal);
+
+                imgnomtxt.Text = "Nom Image : " + result;
+                imgdimtxt.Text = "Dimensions Image : " + imageOriginal.hauteur + "x" + imageOriginal.largeur;
             }
 
 
@@ -88,6 +92,22 @@ namespace ProjetInfo
 
         }
 
+        public void SupprimerAncien()
+        {
+            imgTraite.Source = null;
+            //File.Delete("./Resource/tempimg.bmp");
+        }
+
+
+        public void AfficherImage()
+        {
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.UriSource = new Uri("pack://application:,,,/Resource/tempimg.bmp");
+            image.EndInit();
+            imgTraite.Source = image;
+        }
 
         private void Fractal_Click(object sender, RoutedEventArgs e)
         {
@@ -132,8 +152,6 @@ namespace ProjetInfo
 
         }
 
-        
-
         private Bitmap BitmapImage2Bitmap(BitmapImage bitmapImage)
         {
             // BitmapImage bitmapImage = new BitmapImage(new Uri("../Images/test.png", UriKind.Relative));
@@ -151,8 +169,7 @@ namespace ProjetInfo
 
         private void NoirBlanc_Click(object sender, RoutedEventArgs e)
         {
-            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
-
+            SupprimerAncien();
             MyImage imageOriginal = new MyImage(cheminOriginal);
 
             byte[,] monImage = imageOriginal.partieImage;
@@ -197,7 +214,7 @@ namespace ProjetInfo
             imageOriginal.partieImage = monImage;
             imageOriginal.Image_to_File();
 
-            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
+            AfficherImage();
         }
 
         private void FlipRotation(object sender, RoutedEventArgs e)

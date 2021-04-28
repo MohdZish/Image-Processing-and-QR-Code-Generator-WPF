@@ -13,11 +13,11 @@
     </Page.Background>
 
     <Grid>
-        <TextBox TextWrapping="Wrap" Text="Hello World" x:Name="qrText" FontSize="25" Height="132" Background="Transparent" Width="307" BorderThickness="1" BorderBrush="White" CaretBrush="White" Foreground="White" Margin="536,200,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"  />
+        <TextBox TextWrapping="Wrap" Text="Hello World" x:Name="qrText" FontSize="25" Height="297" Background="Transparent" Width="307" BorderThickness="1" BorderBrush="White" CaretBrush="White" Foreground="White" Margin="536,35,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"  />
         <Button Content="Generer un QR Code" Click="CreerQR_Click" VerticalAlignment="Top"  Margin="536,363,57,0" BorderThickness="0"  Height="30" Background="#FF378BF3" Foreground="White" BorderBrush="#FF37F3AE">
         </Button>
-        <Rectangle  HorizontalAlignment="Left"  Width="392" Fill="White" Margin="47,10,0,27"/>
-        <TextBlock x:Name="test" TextWrapping="Wrap" Text="Resultat QR" HorizontalAlignment="Center" Foreground="White" Margin="536,55,57,225" />
+        <Rectangle  HorizontalAlignment="Left"  Width="392" Fill="White" Margin="47,23,0,27"/>
+        <TextBlock x:Name="test" TextWrapping="Wrap" Text="Resultat QR" HorizontalAlignment="Center" Foreground="White" Margin="209,129,630,151" />
         <Image x:Name="imageQR" Margin="74,35,486,45"/>
 
     </Grid>
