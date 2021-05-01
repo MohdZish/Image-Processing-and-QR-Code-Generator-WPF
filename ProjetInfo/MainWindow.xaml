@@ -78,13 +78,13 @@
                     <Button x:Name="flouBtn"  Content="Flou Image" Click="flouBtn_Click" HorizontalContentAlignment="Left" Padding="8,0" BorderThickness="4,0,0,0" Margin="0,173,5,131" Height="40" HorizontalAlignment="Right" Width="85" Background="#00378BF3" Foreground="White" BorderBrush="#FF8554FF">
 
                     </Button>
-                    <Button x:Name="retrecirBtn"  Content="Retrecir Img" HorizontalContentAlignment="Left" Padding="8,0" BorderThickness="4,0,0,0" Margin="0,229,5,75" Height="40" HorizontalAlignment="Right" Width="85" Background="#00378BF3" Foreground="White" BorderBrush="#FF90FF9F">
+                    <Button x:Name="rotationBtn" Click="rotationBtn_Click"  Content="Rotation Img" HorizontalContentAlignment="Left" Padding="8,0" BorderThickness="4,0,0,0" Margin="0,229,5,75" Height="40" HorizontalAlignment="Right" Width="85" Background="#00378BF3" Foreground="White" BorderBrush="#FF90FF9F">
 
                     </Button>
                     <Button x:Name="mirroirBtn" Click="mirroirBtn_Click" Content="Effet Mirroir" HorizontalContentAlignment="Left" Padding="8,0" BorderThickness="4,0,0,0" Margin="0,285,5,19" Height="40" HorizontalAlignment="Right" Width="85" Background="#00378BF3" Foreground="White" BorderBrush="#FFFEFF84">
 
                     </Button>
-                    <Button x:Name="rotationBtn" Click="Fractal_Click" Content="Fractale" HorizontalContentAlignment="Left" Padding="8,0" BorderThickness="4,0,0,0" Margin="0,0,5,-37" Height="40" HorizontalAlignment="Right" Width="85" Background="#00378BF3" Foreground="White" BorderBrush="#FFE85E5E" VerticalAlignment="Bottom">
+                    <Button x:Name="fractalBtn" Click="Fractal_Click" Content="Fractale" HorizontalContentAlignment="Left" Padding="8,0" BorderThickness="4,0,0,0" Margin="0,0,5,-37" Height="40" HorizontalAlignment="Right" Width="85" Background="#00378BF3" Foreground="White" BorderBrush="#FFE85E5E" VerticalAlignment="Bottom">
 
                     </Button>
                 </Grid>

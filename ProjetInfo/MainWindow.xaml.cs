@@ -485,22 +485,12 @@ namespace ProjetInfo
         }
 
 
-      /*  public void RotationImage(double angle)
+        private void rotationBtn_Click(object sender, RoutedEventArgs e)
         {
-            //A le point de départ
-            //B le point d'arrivé
+            double angle = 50;
 
             double cosinusAngle = Math.Cos(angle);
             double sinusAngle = Math.Sin(angle);
-
-
-            BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
-
-            MyImage imageOriginal = new MyImage(cheminOriginal);
-
-            byte[,] monImage = imageOriginal.partieImage;
-
-
 
             //coordonnées point départ
             int XA = 0;
@@ -510,11 +500,35 @@ namespace ProjetInfo
             int XB = 0;
             int YB = 0;
 
+            MyImage imageOriginal = new MyImage(cheminOriginal);
+
+            byte[,] photo = imageOriginal.partieImage;
+
+
+            //image RGB -> image Pixel
+            Pixel[,] imagePixel = new Pixel[photo.GetLength(0), photo.GetLength(1)/3];
+
+            int compte = 0;
+            for (int i = 0; i < imagePixel.GetLength(0); i++)
+            {
+                for (int j = 0; j < imagePixel.GetLength(1); j++)
+                {
+                    imagePixel[i, j] = new Pixel(photo[i, j+compte], photo[i, j + compte], photo[i, j + compte]);
+                    if(j%3 == 0) { compte++; }
+                }
+                compte = 0;
+            }
+
+
+            title.Text = imagePixel[0, 0].Red + "";
+
+
 
             //on veut que la rotation se fasse à partir du centre de l'image , on doit donc changer les coordonnées de l'origine,
             //on trasnslate l'origine avec le vecteur u(photo.GetLength(0) / 2);(photo.GetLength(1) / 2))
-            int centreXA = ((photo.GetLength(1) + 1) / 2) - 1;
-            int centreYA = ((photo.GetLength(0) + 1) / 2) - 1;
+            int centreXA = ((imagePixel.GetLength(1) + 1) / 2) - 1;
+            int centreYA = ((imagePixel.GetLength(0) + 1) / 2) - 1;
+
 
             // pour avoir la hauteur et la largeur maximale , on doit appliquer notre fonction rotation 
             int largeurBis = Convert.ToInt32(Math.Abs(cosinusAngle * photo.GetLength(1)) + Math.Abs(sinusAngle * photo.GetLength(0))) + 1;
@@ -523,7 +537,6 @@ namespace ProjetInfo
 
             int hauteurMatAgrandie2 = hauteurBis;
             int largeurMatAgrandie2 = largeurBis;
-
 
             if (hauteurBis % 4 == 1)
             {
@@ -580,14 +593,15 @@ namespace ProjetInfo
             }
 
 
-            for (int indexl = 0; indexl <= photo.GetLength(0) - 1; indexl++)
+
+            for (int indexl = 0; indexl <= imagePixel.GetLength(0) - 1; indexl++)
             {
-                for (int indexc = 0; indexc <= photo.GetLength(1) - 1; indexc++)
+                for (int indexc = 0; indexc <= imagePixel.GetLength(1) - 1; indexc++)
                 {
                     // on trannlate les coorodnnées XA et YA dans le  repère
 
-                    XA = photo.GetLength(1) - indexc - 1 - centreXA;
-                    YA = photo.GetLength(0) - indexl - 1 - centreYA;
+                    XA = imagePixel.GetLength(1) - indexc - 1 - centreXA;
+                    YA = imagePixel.GetLength(0) - indexl - 1 - centreYA;
                     //on realise la rotation dans le nouveau repere
                     XB = Convert.ToInt32((XA * cosinusAngle) + (YA * sinusAngle));
                     YB = Convert.ToInt32((XA * (-sinusAngle)) + (cosinusAngle * YA));
@@ -597,7 +611,7 @@ namespace ProjetInfo
                     YB = centreYB - YB;
                     if ((0 <= XB && XB <= (matAgrandie.GetLength(1) - 1)) && (0 <= YB && YB <= (matAgrandie.GetLength(0) - 1)))
                     {
-                        matAgrandie[YB, XB] = photo[indexl, indexc];
+                        matAgrandie[YB, XB] = imagePixel[indexl, indexc];
                         //indexl
                         // indexc
                     }
@@ -614,21 +628,35 @@ namespace ProjetInfo
                 }
             }
 
-            //on retourne la nouvelle photo
+            // on retourne la nouvelle photo
 
-            this.photoRotation = matAgrandie2;
-            this.largeurRotation = matAgrandie2.GetLength(1);
-            Console.WriteLine(Largeur);
-            this.hauteurRotation = matAgrandie2.GetLength(0);
-            Console.WriteLine(Hauteur);
-            tailleFichierRotation = 54 + (hauteurRotation * largeurRotation * 3);
-            imageRotation = new byte[tailleFichierRotation];
-            RemettreImageModifie(photoRotation, hauteurRotation, largeurRotation);
+            // this.photoRotation = matAgrandie2;
+            int largeurRotation = matAgrandie2.GetLength(1);
 
-            byte[] tailleRotationByte = Convertir_Int_To_Endian(tailleFichierRotation, 4);
+            int hauteurRotation = matAgrandie2.GetLength(0);
+
+            int tailleFichierRotation = 54 + (hauteurRotation * largeurRotation * 3);
+
+            byte[] imageRotation = new byte[tailleFichierRotation];
+
+
+            int compteur = 54;
+            for (int i = 0; i < hauteurRotation; i++)
+            {
+                for (int j = 0; j < largeurRotation; j++)
+                {
+
+                    imageRotation[compteur] = matAgrandie2[i, j].Red;
+                    imageRotation[compteur + 1] = matAgrandie2[i, j].Green;
+                    imageRotation[compteur + 2] = matAgrandie2[i, j].Blue;
+                    compteur = compteur + 3;
+                }
+            }
+
+            byte[] tailleRotationByte = imageOriginal.Convertir_Int_To_Endian(tailleFichierRotation, 4);
             for (int k = 0; k < 54; k++)
             {
-                imageRotation[k] = image[k];
+                imageRotation[k] = imageOriginal.imgdonnees[k];
 
             }
 
@@ -637,9 +665,8 @@ namespace ProjetInfo
                 imageRotation[i] = tailleRotationByte[i - 2];
             }
 
-
-            byte[] conversionHauteur = Convertir_Int_To_Endian(hauteurRotation, 4);
-            byte[] conversionLargeur = Convertir_Int_To_Endian(largeurRotation, 4);
+            byte[] conversionHauteur = imageOriginal.Convertir_Int_To_Endian(hauteurRotation, 4);
+            byte[] conversionLargeur = imageOriginal.Convertir_Int_To_Endian(largeurRotation, 4);
 
             for (int i = 0; i < 4; i++) //largeur
             {
@@ -654,13 +681,193 @@ namespace ProjetInfo
                 //hauteurByte[j] = image[j + 22];
                 imageRotation[j + 22] = conversionHauteur[j];
             }
-            Console.WriteLine(largeurRotation);
-            Console.WriteLine(hauteurRotation);
 
-            File.WriteAllBytes("./Images/SortieRotation2.bmp", imageRotation);
+
+            //imageOriginal.partieImage = imageRotation;
+
+            //imageOriginal.Image_to_File();
+
+            File.WriteAllBytes("./Resource/rotSortie.bmp", imageRotation);
+
+            imgTraite.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/rotSortie.bmp"));
         }
 
-    */
+        /*  public void RotationImage(double angle)
+          {
+              //A le point de départ
+              //B le point d'arrivé
+
+              double cosinusAngle = Math.Cos(angle);
+              double sinusAngle = Math.Sin(angle);
+
+
+              BitmapImage originel = (BitmapImage)imgOriginel.Source; //on prend l'image originel
+
+              MyImage imageOriginal = new MyImage(cheminOriginal);
+
+              byte[,] monImage = imageOriginal.partieImage;
+
+
+
+              //coordonnées point départ
+              int XA = 0;
+              int YA = 0;
+
+              //coordonnées point d'arrivé 
+              int XB = 0;
+              int YB = 0;
+
+
+              //on veut que la rotation se fasse à partir du centre de l'image , on doit donc changer les coordonnées de l'origine,
+              //on trasnslate l'origine avec le vecteur u(photo.GetLength(0) / 2);(photo.GetLength(1) / 2))
+              int centreXA = ((photo.GetLength(1) + 1) / 2) - 1;
+              int centreYA = ((photo.GetLength(0) + 1) / 2) - 1;
+
+              // pour avoir la hauteur et la largeur maximale , on doit appliquer notre fonction rotation 
+              int largeurBis = Convert.ToInt32(Math.Abs(cosinusAngle * photo.GetLength(1)) + Math.Abs(sinusAngle * photo.GetLength(0))) + 1;
+
+              int hauteurBis = Convert.ToInt32(Math.Abs(sinusAngle * photo.GetLength(1)) + Math.Abs(cosinusAngle * photo.GetLength(0))) + 1;
+
+              int hauteurMatAgrandie2 = hauteurBis;
+              int largeurMatAgrandie2 = largeurBis;
+
+
+              if (hauteurBis % 4 == 1)
+              {
+                  hauteurMatAgrandie2 = hauteurBis + 3;
+              }
+              if (hauteurBis % 4 == 2)
+              {
+                  hauteurMatAgrandie2 = hauteurBis + 2;
+              }
+              if (hauteurBis % 4 == 3)
+              {
+                  hauteurMatAgrandie2 = hauteurBis + 1;
+              }
+
+              if (largeurBis % 4 == 1)
+              {
+                  largeurMatAgrandie2 = largeurBis + 3;
+              }
+              if (largeurBis % 4 == 2)
+              {
+                  largeurMatAgrandie2 = largeurBis + 2;
+              }
+              if (largeurBis % 4 == 3)
+              {
+                  largeurMatAgrandie2 = largeurBis + 1;
+              }
+
+              Pixel[,] matAgrandie2 = new Pixel[hauteurMatAgrandie2, largeurMatAgrandie2];
+
+              for (int i = 0; i < matAgrandie2.GetLength(0); i++)
+              {
+                  for (int j = 0; j < matAgrandie2.GetLength(1); j++)
+                  {
+                      Pixel nulle = new Pixel(0, 255, 0);
+                      matAgrandie2[i, j] = nulle;
+                  }
+              }
+
+
+              //on effectue une trasnlation de l'origine dans le nouveau repere de vecteur (largeurBis/2 , hauteurBis/2) 
+              int centreXB = Convert.ToInt32(((largeurBis + 1) / 2) - 1);
+              int centreYB = Convert.ToInt32(((hauteurBis + 1) / 2) - 1);
+
+
+              Pixel[,] matAgrandie = new Pixel[hauteurBis, largeurBis]; //Sécrurité plus 1
+
+              for (int i = 0; i < matAgrandie.GetLength(0); i++)
+              {
+                  for (int j = 0; j < matAgrandie.GetLength(1); j++)
+                  {
+                      Pixel nulle = new Pixel(0, 0, 255);
+                      matAgrandie[i, j] = nulle;
+                  }
+              }
+
+
+              for (int indexl = 0; indexl <= photo.GetLength(0) - 1; indexl++)
+              {
+                  for (int indexc = 0; indexc <= photo.GetLength(1) - 1; indexc++)
+                  {
+                      // on trannlate les coorodnnées XA et YA dans le  repère
+
+                      XA = photo.GetLength(1) - indexc - 1 - centreXA;
+                      YA = photo.GetLength(0) - indexl - 1 - centreYA;
+                      //on realise la rotation dans le nouveau repere
+                      XB = Convert.ToInt32((XA * cosinusAngle) + (YA * sinusAngle));
+                      YB = Convert.ToInt32((XA * (-sinusAngle)) + (cosinusAngle * YA));
+
+                      // on fait la translation sens inverse dans le repère
+                      XB = centreXB - XB;
+                      YB = centreYB - YB;
+                      if ((0 <= XB && XB <= (matAgrandie.GetLength(1) - 1)) && (0 <= YB && YB <= (matAgrandie.GetLength(0) - 1)))
+                      {
+                          matAgrandie[YB, XB] = photo[indexl, indexc];
+                          //indexl
+                          // indexc
+                      }
+
+
+                  }
+              }
+
+              for (int i = 0; i < matAgrandie.GetLength(0); i++)
+              {
+                  for (int j = 0; j < matAgrandie.GetLength(1); j++)
+                  {
+                      matAgrandie2[i, j] = matAgrandie[i, j];
+                  }
+              }
+
+              //on retourne la nouvelle photo
+
+              this.photoRotation = matAgrandie2;
+              this.largeurRotation = matAgrandie2.GetLength(1);
+              Console.WriteLine(Largeur);
+              this.hauteurRotation = matAgrandie2.GetLength(0);
+              Console.WriteLine(Hauteur);
+              tailleFichierRotation = 54 + (hauteurRotation * largeurRotation * 3);
+              imageRotation = new byte[tailleFichierRotation];
+              RemettreImageModifie(photoRotation, hauteurRotation, largeurRotation);
+
+              byte[] tailleRotationByte = Convertir_Int_To_Endian(tailleFichierRotation, 4);
+              for (int k = 0; k < 54; k++)
+              {
+                  imageRotation[k] = image[k];
+
+              }
+
+              for (int i = 2; i < 6; i++)
+              {
+                  imageRotation[i] = tailleRotationByte[i - 2];
+              }
+
+
+              byte[] conversionHauteur = Convertir_Int_To_Endian(hauteurRotation, 4);
+              byte[] conversionLargeur = Convertir_Int_To_Endian(largeurRotation, 4);
+
+              for (int i = 0; i < 4; i++) //largeur
+              {
+                  //largeurByte[i] = image[i + 18]; // hauteur
+                  imageRotation[i + 18] = conversionLargeur[i];
+                  //Console.WriteLine(imageRotation[i + 18]);
+              }
+
+
+              for (int j = 0; j < 4; j++)//hauteur
+              {
+                  //hauteurByte[j] = image[j + 22];
+                  imageRotation[j + 22] = conversionHauteur[j];
+              }
+              Console.WriteLine(largeurRotation);
+              Console.WriteLine(hauteurRotation);
+
+              File.WriteAllBytes("./Images/SortieRotation2.bmp", imageRotation);
+          }
+
+      */
 
     }
     }

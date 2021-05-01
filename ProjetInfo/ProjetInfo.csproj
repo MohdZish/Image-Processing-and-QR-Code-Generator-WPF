@@ -74,6 +74,7 @@
     </ApplicationDefinition>
     <Compile Include="GenericGF.cs" />
     <Compile Include="GenericGFPoly.cs" />
+    <Compile Include="Pixel.cs" />
     <Compile Include="QRcode.xaml.cs">
       <DependentUpon>QRcode.xaml</DependentUpon>
     </Compile>
