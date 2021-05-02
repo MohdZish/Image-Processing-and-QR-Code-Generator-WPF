@@ -939,7 +939,6 @@ namespace ProjetInfo
         }
 
 
-
         public int Byte_To_int(int[] oct)
         {
             int val = 0;
