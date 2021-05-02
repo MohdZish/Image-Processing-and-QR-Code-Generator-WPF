@@ -938,6 +938,8 @@ namespace ProjetInfo
             return oct;
         }
 
+
+
         public int Byte_To_int(int[] oct)
         {
             int val = 0;
