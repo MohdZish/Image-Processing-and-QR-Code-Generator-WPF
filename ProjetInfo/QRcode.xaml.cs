@@ -28,6 +28,12 @@ namespace ProjetInfo
             InitializeComponent();
         }
 
+
+        /// <summary>
+        /// Methode qui change un valeur ALPHANUMERIQUE en Int pour QR Code
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
         public int StringToNum(char val)
         {
             int resultat = 0;
@@ -76,13 +82,21 @@ namespace ProjetInfo
             }
         }
 
+
+        /// <summary>
+        /// Methode pour convertir un valeur int à des Bytes
+        /// la parametre bytesNecessaires signifie la longeur de bytes souhaité
+        /// </summary>
+        /// <param name="valdeciaml"></param>
+        /// <param name="bytesNecessaire"></param>
+        /// <returns></returns>
         public string DecimalToBytes(int valdeciaml, int bytesNecessaire) //Pour decimal -> binaire, en ajoutant 0 avant selon les necessités
         {
             string bytes = Convert.ToString(valdeciaml, 2);
 
             //ajouter les 0 à gauche pour faire zeroAvant bytes
             string zeros = "";
-            for (int i = 0; i < bytesNecessaire - bytes.Length; i++)
+            for (int i = 0; i < bytesNecessaire - bytes.Length; i++) // jusqu'au que la condition de bytesNecessaires est rempli
             {
                 zeros += "0";
             }
@@ -92,18 +106,24 @@ namespace ProjetInfo
         }
 
       
-
-        private void CreerQR_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// METHODE POUR CREER LE QR CODE !!!!!!
+        /// Appeler apres avoir clicker sur le bouton Generer un QR Code
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreerQR_Click(object sender, RoutedEventArgs e) 
         {
+            // Etapes intiale :
             // Alphanumerique donc 0010
             //Convertir nombre de caracteres à 9 bytes binaire
             //Determiner Version selon n° de carac. : V1 - max 25cars  ET V2 - max 47cars
             //Convertir texte à 9 bytes binaire
-            //
 
-            int nombreCaracs = qrText.Text.Length;
 
-            string nombreCaracBYTES = DecimalToBytes(nombreCaracs, 9);
+            int nombreCaracs = qrText.Text.Length; // qrText ====> le text ecrit par l'utilisateur
+
+            string nombreCaracBYTES = DecimalToBytes(nombreCaracs, 9); // convertir la longeur en 9 bytes
 
             //Convertir Text en 11 bits//
             //Couper Texte en couples de 2
@@ -214,7 +234,9 @@ namespace ProjetInfo
             // Toujours pas 152 ?
             // Ajouter 11101100 00010001 (236 et 17) des specifications QRcode pour remplir vide
             int calcul = (152 - bytesDonnees.Length) / 8;
-   
+                
+
+            // Ajouter les bytes necessaire pour remplir le QR code à 208 bytes
             bool change = true;
             for (int i = 0; i < calcul; i++)
             {
@@ -316,7 +338,6 @@ namespace ProjetInfo
 
             //Bords Noir :
 
-
             // IMPORTANT : Chaque pixel vertical vaut : 100;   car j'ai pris une image 2100*2100 de base donc fois 100
             //             Chaque pixel horizontal vaut : 300;
 
@@ -394,24 +415,22 @@ namespace ProjetInfo
 
             // Motifs de sombre fini
 
-
-
-
             // MESSAGE est le donne avec tous les BYTES + CORRECTIONS en string !
             // BYTES -------------------------> QR Code !!!!
 
             // ZIGZAG /\/\
 
+
+            // Methode SUPER IMPORTANT pour faire les testes quand on rempli le QR Code
             int x1 = 0;
             int y1 = 20;
-            bool cotefait = false;
-            bool descente = false;
+            bool cotefait = false; // est-ce que nous sommes à gauche ou à droite de ZigZag actuellement ?
+            bool descente = false; // Actuellement on monte ou on descent?
 
-
-            for (int i = 0; i < message.Length; i++)
+            for (int i = 0; i < message.Length; i++) // aller jusqu' à remplir tous les bits de message sur le qr code
             {
-                byte couleur = 255;
-                if (message[i] == '1')
+                byte couleur = 255; // couleur de base 
+                if (message[i] == '1') // si 1 alors couleur Noir 0
                 {
                     couleur = 0;
                 }
@@ -419,12 +438,12 @@ namespace ProjetInfo
 
                 // les testes pour choisir prochain bloc
 
-                if (descente == false)
+                if (descente == false) // Si on est en train de monter dans le qr code
                 {
-                    if (cotefait == false)
+                    if (cotefait == false) // verifie si actuellement on est en gauche ou froite de zigzag
                     {
                         y1--;
-                        cotefait = true;
+                        cotefait = true; // alors cote fait donc on modifie
                     }
                     else  //aller en haut
                     {
@@ -520,7 +539,7 @@ namespace ProjetInfo
             }
 
 
-            // MASQUAGE !!!!
+            // MASQUAGE !!!! Type : 000 
             byte[,] mask0 = new byte[21,21];
 
             for(int i = 0; i< mask0.GetLength(0); i++)
@@ -539,7 +558,7 @@ namespace ProjetInfo
             }
 
 
-            // masking ici
+            // masquage ici de XOR
             bool masqer = true;
             if (masqer)
             {
@@ -689,10 +708,10 @@ namespace ProjetInfo
             imageOriginal.partieImage = imageRGB;
             imageOriginal.Image_to_File();
 
-            imageQR.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp"));
+            imageQR.Source = new BitmapImage(new Uri("pack://application:,,,/Resource/tempimg.bmp")); // WPF pour ouvrir le fichier enregistré
 
 
-            //Changement de Version selon n° caracs.
+            //Changement de Version selon n° caracs. PAS FAIT :(
             if (nombreCaracs <= 25)
             {
                 //version 1
@@ -721,6 +740,16 @@ namespace ProjetInfo
             return monimage;
         }
 
+
+        /// <summary>
+        /// Methode pour creer une carrée, en partant sur en haut à gacuhe en coordonnées
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="monimage"></param>
+        /// <param name="longeur"></param>
+        /// <param name="couleur"></param>
+        /// <returns></returns>
         public byte[,] Carree(int x, int y, byte[,] monimage, int longeur, byte couleur) //pour creer les carrees (motifs) x,y les coordonnees centre
         {
             for (int i = 0; i < longeur; i++)

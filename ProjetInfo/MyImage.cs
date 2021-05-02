@@ -3,6 +3,9 @@ using System.IO;
 
 namespace ProjetInfo
 {
+    /// <summary>
+    /// Classe IMPORTANTE : Image sert à traiter les images en separant ses elements (header/images)
+    /// </summary>
     class MyImage
     {
         public int hauteur;
@@ -11,22 +14,13 @@ namespace ProjetInfo
         public byte[] imgdonnees; 
         public byte[,] partieImage;  //matrice de bytes
 
-
-        //Rotation
-        //rotation
-        int tailleFichierRotation;
-        int hauteurRotation;
-        int largeurRotation;
         Pixel[,] photo;
-        Pixel[,] photoRotation;
-        byte[] imageRotation;
-        byte[] photoPure;
 
-        public MyImage(string myfile)
+        public MyImage(string myfile) // Constructeur de la Classe
         {
             imgdonnees = File.ReadAllBytes(myfile); //byte[] avec tous les donnees du bmp (metadonnee + image)
 
-
+            // Recuperer la taille de l'image
             byte[] taille_image = new byte[4];
             int compt = 0;
             for (int i = 2; i < 6; i++)
@@ -37,7 +31,7 @@ namespace ProjetInfo
             }
             taille = Convertir_Endian_To_Int(taille_image);
 
-
+            // Recuperer la largeur de l'image
             byte[] largeur_image = new byte[4];
             compt = 0;
             for (int i = 18; i < 22; i++)
@@ -47,6 +41,7 @@ namespace ProjetInfo
             }
             largeur = Convertir_Endian_To_Int(largeur_image);
 
+            // Recuperer la hauteur de l'image
             byte[] hauteur_image = new byte[4];
             compt = 0;
             for (int i = 22; i < 26; i++)
@@ -57,7 +52,7 @@ namespace ProjetInfo
             }
             hauteur = Convertir_Endian_To_Int(hauteur_image);
 
-
+            // Recuperer la partie Image de l'image (avec RGB donc largeur*3)
             partieImage = new byte[hauteur, largeur * 3];
             int compte = 54;
             for (int i = 0; i < partieImage.GetLength(0); i++)
@@ -71,6 +66,7 @@ namespace ProjetInfo
             }
         }
 
+        // Methode pour convertir Little Endian à un Int
         public int Convertir_Endian_To_Int(byte[] tab)
         {
             int a = 0;
@@ -83,6 +79,8 @@ namespace ProjetInfo
             return a;
         }
 
+
+        // Methode important pour ENREGISTRER Image apres avoir fait les traitements
         public void Image_to_File()
         {
             int a = 54;
@@ -100,11 +98,12 @@ namespace ProjetInfo
         }
 
 
+        // Prendre la partie Pixel d'une image avec la classe Pixel
         public Pixel[,] RecupererImagePixel()
         {
 
             photo = new Pixel[hauteur, largeur];
-            //(nbOctetCouleur * largeur) , on a 3 octets pour chaque pixel , et sur une ligne avec un certaine lageur
+
             for (int i = 0; i < hauteur; i++)
             {
                 for (int j = 56; j < 56 + (3 * largeur); j = j + 3) // le premier bit annonce couleur est 54  (nbOcterCouleur
@@ -117,7 +116,7 @@ namespace ProjetInfo
             return photo;
         }
 
-
+        //Convertir un nombre Int à un Little Endian
         public byte[] Convertir_Int_To_Endian(int a)
         {
             byte[] tab = new byte[4];
@@ -133,7 +132,7 @@ namespace ProjetInfo
             return tab;
         }
 
-
+        //Convertir un nombre Int à un Little Endian (v2)
         public byte[] Convertir_Int_To_Endian(int val, int byteAlloues)
         {
 

@@ -8,19 +8,18 @@ namespace ProjetInfo
 {
     class Pixel
     {
+        // Les trois differents couleurs necessaires
         byte red;
         byte green;
         byte blue;
-
-
-        public Pixel(byte red, byte green, byte blue)// constructeur qui prend en entrée 3 byte associé à chaque couleur
+        public Pixel(byte red, byte green, byte blue)// constructeur pour definir les couleurs
         {
             this.red = red;
             this.green = green;
             this.blue = blue;
         }
 
-        public Pixel() //constructeur de pixel nul
+        public Pixel() // pas necessaire mais on definie les paramateres nul si pas donnéés
         {
             this.red = 0;
             this.blue = 0;
