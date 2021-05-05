@@ -542,6 +542,7 @@ namespace ProjetInfo
         /// <param name="e"></param>
         private void qrcodeBtn_Click(object sender, RoutedEventArgs e)
         {
+            imgTraite.Source = null;
             if(qrframe.Content == null)
             {
                 QRcode pageQR = new QRcode(); // creer une instance de page QR Code 
